@@ -127,3 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+DpopsBotEnv/
+.vscode/settings.json
