@@ -3,8 +3,8 @@ from discord.ext import commands
 from discord import Intents
 from utils.tools import Helpers
 
-cogs_to_load = ["cogs.dpopsQueries", "cogs.help", 'cogs.autoFunctions', 'cogs.delegateQueries',
-                "delegate.xpaymentDelegate", "delegate.voterCommands", 'cogs.botSetup']
+cogs_to_load = ["cogs.help", 'cogs.autoFunctions', 'cogs.delegateQueries','cogs.botSetup',
+                "delegate.delegateCommands", "delegate.voterCommands"]
 
 
 class DiscordBot(commands.Bot):
