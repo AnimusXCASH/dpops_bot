@@ -9,7 +9,7 @@ class VoterCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.command_string = self.bot.get_command_str()
-        self.xDelegate = self.bot.dpops_queries.xpayment
+        self.delegate_api_access = self.bot.dpops_queries.delegate_api
 
     @commands.group(aliases=["v"])
     async def voter(self, ctx):
@@ -116,7 +116,7 @@ class VoterCommands(commands.Cog):
 
         if public_address:
             if match(r'^XCA[A-Za-z0-9]{95}$|^XCB[A-Za-z0-9]{107}', public_address) is not None:
-                data = list(reversed(self.xDelegate.public_address_payments(public_address=public_address)))[:4]
+                data = list(reversed(self.delegate_api_access.public_address_payments(public_address=public_address)))[:4]
                 await get_last_payments(ctx=ctx, data=data)
 
             else:
@@ -137,7 +137,7 @@ class VoterCommands(commands.Cog):
 
         if public_address:
             if match(r'^XCA[A-Za-z0-9]{95}$|^XCB[A-Za-z0-9]{107}', public_address) is not None:
-                data = self.xDelegate.pub_addr_info(pub_addr=public_address)
+                data = self.delegate_api_access.pub_addr_info(pub_addr=public_address)
                 await state_info(ctx=ctx, data=data)
 
             else:
