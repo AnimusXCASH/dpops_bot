@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 DpopsBotEnv/
 .vscode/settings.json
+botSetup.json
