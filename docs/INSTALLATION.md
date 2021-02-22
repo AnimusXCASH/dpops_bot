@@ -99,12 +99,14 @@ with content:
 {
   "command": "COMMAND CHARACTER",
   "token": "BOT TOKEN OBTAINED IN STEP 2.4.1 ",
+  "dpopsApi": "dpops api link from dpops web page" 
 }
 
 Example:
 {
   "command": "!",  // Bot will listen to command string ! or @botTag
   "token": "cdscdscds.YAJ5uw.dockasmsdcasdcdascdasca",   // Bot token 
+  "dpopsApi": "http://xpayment.x-network.eu" 
 }
 ```
 
