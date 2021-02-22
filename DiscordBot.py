@@ -4,7 +4,7 @@ from discord import Intents
 from utils.tools import Helpers
 
 cogs_to_load = ["cogs.dpopsQueries", "cogs.help", 'cogs.autoFunctions', 'cogs.delegateQueries',
-                "delegate.xpaymentDelegate", "delegate.voterCommands"]
+                "delegate.xpaymentDelegate", "delegate.voterCommands", 'cogs.botSetup']
 
 
 class DiscordBot(commands.Bot):
@@ -17,9 +17,9 @@ class DiscordBot(commands.Bot):
         self.remove_command('help')
         self.dpops_queries = dpops_wrapper
         self.voters_manager = backend_manager.voters
+        self.bot_settings_manager = backend_manager.bot_settings_manager
         self.rpc_wallet = xcash_manager
         self.load_cogs()
-        self.stats_channel_id = self.bot_settings["dpopsStats"]
 
     def load_cogs(self):
         notification_str = '+++++++++++++++++++++++++++++++++++++++ \n' \
