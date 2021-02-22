@@ -1,4 +1,3 @@
-from xcash_wallet.xcashDaemon import XcashDaemon
 from xcash_wallet.xcashRpcWallet import WalletRpc
 
 rpc_data = {
