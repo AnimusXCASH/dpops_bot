@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import Intents
 from utils.tools import Helpers
 
-cogs_to_load = ["cogs.help", 'cogs.autoFunctions', 'cogs.delegateQueries','cogs.botSetup',
+cogs_to_load = ["cogs.help", 'cogs.autoFunctions','cogs.botSetup',
                 "delegate.delegateCommands", "delegate.voterCommands"]
 
 
