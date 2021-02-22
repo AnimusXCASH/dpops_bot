@@ -12,7 +12,6 @@ class AutomaticTasks:
     def __init__(self, dpops_wrapper, bot):
         self.dpops_wrapper = dpops_wrapper
         self.bot = bot
-        self.xDelegate = self.bot.dpops_queries.xpayment
 
     async def send_dpops_stats(self):
         try:
