@@ -10,7 +10,7 @@ class XPaymentDelegateCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.command_string = self.bot.get_command_str()
-        self.xDelegate = self.bot.dpops_queries.xpayment
+        self.delegate_api_access = self.bot.dpops_queries.delegate_api
 
     @commands.group(aliases=["x"])
     async def delegate(self, ctx):
@@ -30,7 +30,7 @@ class XPaymentDelegateCommands(commands.Cog):
 
     @delegate.command(aliases=["s"])
     async def stats(self, ctx):
-        data = self.xDelegate.get_stats()
+        data = self.delegate_api_access.get_stats()
         if not data.get("error"):
             await delegate_stats(destination=ctx.author, data=data, thumbnail=self.bot.user.avatar_url)
         else:
@@ -38,7 +38,7 @@ class XPaymentDelegateCommands(commands.Cog):
 
     @delegate.command(aliases=["b"])
     async def blocks(self, ctx):
-        data = self.xDelegate.get_blocks_found()
+        data = self.delegate_api_access.get_blocks_found()
         await get_last_blocks(destination=ctx.author, blocks=data, thumbnail=self.bot.user.avatar_url)
 
 
