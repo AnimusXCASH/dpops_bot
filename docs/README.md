@@ -6,8 +6,7 @@ Discord Bot monitor which can be deployed by anyone on their private server.
 
 # How to's
 
- [Installation Instructions](INSTALLATION.md)
-
+[Installation Instructions](INSTALLATION.md)
 
 # Integrated functions
 
@@ -25,4 +24,15 @@ Discord Bot monitor which can be deployed by anyone on their private server.
         - [ ] Daily overall statistical snapshots of delegate
 
 - [ ] X-Cash DPOPS network queries
+
+# Command map 
+[Commands for Voters](VOTER.md)
+[Commands for Discord Server Owners](OWNER.md)
+[Other Commands](OTHER.md)
     
+
+# Support
+## Discord X-Payment-Delegate Discord Server
+[Invite Link](https://discord.gg/pj9JCmTeJc) (User @Animus)
+
+
