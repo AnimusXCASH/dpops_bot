@@ -3,7 +3,6 @@ from apscheduler.triggers.cron import CronTrigger
 from cogs.utils.customMessages import global_stats, top_delegates
 from operator import itemgetter
 from discord import Color, Embed
-from pprint import pprint
 
 from datetime import datetime
 import json
@@ -14,34 +13,6 @@ class AutomaticTasks:
         self.dpops_wrapper = dpops_wrapper
         self.bot = bot
         self.xDelegate = self.bot.dpops_queries.xpayment
-        self.new_block_channel = 812299916960464936
-
-    def __store_last_updated_block_height(self, block_height):
-        """
-        Stores the height of last block which was monitored for incoming transactions
-        :param block_height: block height from RPC Daemon as INT
-        :return: Updates the value in last_block.json
-        """
-        try:
-            data = {"block_height": block_height}
-
-            with open('last_block.json', 'w') as f:
-                json.dump(data, f)
-
-            return True
-        except Exception:
-            return False
-
-    def __read_last_checked_block_data(self):
-        """
-        Loads the last block height which was stored in last_block.json
-        :return: Block height as INT
-        """
-
-        with open('last_block.json') as json_file:
-            data = json.load(json_file)
-            last_marked_blocked = data["block_height"]
-            return last_marked_blocked
 
     async def send_dpops_stats(self):
         try:
@@ -84,30 +55,39 @@ class AutomaticTasks:
             error = all_delegates["error"]
             print(error)
 
-    async def xpayment_block_checker(self):
-        print('Checking found blocks')
-        last_checked_block = self.__read_last_checked_block_data()
-        last_block_found = self.xDelegate.get_last_block_found()[0]
+    async def delegate_last_block_check(self):
 
-        last_produced_block = int(last_block_found["block_height"])
+        # Obtain settings and values from database as dict
+        block_data = self.bot.bot_settings_manager.get_setting(setting_name='new_block')
 
-        if last_produced_block > last_checked_block:
-            print("block found")
-            block_channel = self.bot.get_channel(id=self.new_block_channel)
+        # Check if notifcations on
+        if block_data["status"] == 1:
+            last_checked_block = int(block_data["value"])  # Get last check height as INT
+            last_block_found = self.xDelegate.get_last_block_found()[0]
+            last_produced_block = int(last_block_found["block_height"])
 
-            new_block = Embed(title=f':bricks: New block',
-                              description=f'Height @ ***{int(last_block_found["block_height"]):,}***',
-                              colour=Color.green())
-            new_block.add_field(name=f":date: Time",
-                                value=f"```{datetime.fromtimestamp(int(last_block_found['block_date_and_time']))}```")
-            new_block.add_field(name=f":moneybag: Block Value",
-                                value=f"```{float(last_block_found['block_reward']) / (10 ** 6):,} XCASH```",inline=False)
+            if last_produced_block > last_checked_block:
+                block_channel = self.bot.get_channel(id=int(block_data["channel"]))
+                new_block = Embed(title=f':bricks: New block',
+                                  description=f'Height @ ***{int(last_block_found["block_height"]):,}***',
+                                  colour=Color.green())
+                new_block.add_field(name=f":date: Time",
+                                    value=f"```{datetime.fromtimestamp(int(last_block_found['block_date_and_time']))}```")
+                new_block.add_field(name=f":moneybag: Block Value",
+                                    value=f"```{float(last_block_found['block_reward']) / (10 ** 6):,} XCASH```",
+                                    inline=False)
 
-            await block_channel.send(embed=new_block)
-
-            self.__store_last_updated_block_height(block_height=int(last_produced_block))
+                await block_channel.send(embed=new_block)
+                if self.bot.bot_settings_manager.update_settings_by_dict(setting_name="new_block",
+                                                                         value={"value": int(
+                                                                             last_block_found["block_height"])}):
+                    print("Last block marked successfully to db")
+                else:
+                    print("there has been an issue when marking latest block in database")
+            else:
+                print(f"No new blocks have been found by delegate @ f{datetime.utcnow()}")
         else:
-            print(f"No new blocks have been found by delegate @ f{datetime.utcnow()}")
+            print("Service for delegate block notifcations turned off")
 
     async def notify_on_cashout(self):
         pass
@@ -129,8 +109,9 @@ def start_tasks(automatic_tasks):
     #
     # scheduler.add_job(automatic_tasks.delegate_ranks, CronTrigger(hour='02', second='02'), misfire_grace_time=2,
     #                   max_instances=20)
-    scheduler.add_job(automatic_tasks.xpayment_block_checker, CronTrigger(minute='02,04,06,08,10,12,14,16,18,20,22,24,26,'
-                                                                                 '28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58'), misfire_grace_time=2,
+    scheduler.add_job(automatic_tasks.delegate_last_block_check,
+                      CronTrigger(minute='02,04,06,08,10,12,14,16,18,20,22,24,26,'
+                                         '28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58'), misfire_grace_time=2,
                       max_instances=20)
 
     scheduler.start()
