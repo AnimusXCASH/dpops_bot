@@ -16,7 +16,7 @@ $ git clone https://github.com/AnimusXCASH/dpops_bot.git
 ```
 
 
-## 2. Install requirements:
+## 2. Install requirements and setup project:
 
 ### 2.1. Mongo Database
 
@@ -29,7 +29,7 @@ $ sudo service mongod start
 ```
 
 ### 2.2. PIP installation 
-[pip3/pip installation instructions](https://pip.pypa.io/en/stable/installing/) (Mandatory)**
+[pip3/pip installation instructions](https://pip.pypa.io/en/stable/installing/) (Mandatory)
 ```shell script
 $ sudo apt install -y python3-pip
 $ pip3 --version
@@ -87,7 +87,7 @@ Required permissions:
 - Invite bot to the community by clicking on link created through previous step
     - All necessary permissions will be set automatically once bot joins
 
-#### 2.5. Bot Setup
+#### 2.4.2. Bot Setup
 
 go to main project folder and create file name:
 ```text
@@ -110,9 +110,11 @@ Example:
 }
 ```
 
-### Bring the bot online
+## 3. Bring the bot to life
 In main project folder run 
 
-```python3 main.py```
+```
+python3 main.py
+```
 
 
