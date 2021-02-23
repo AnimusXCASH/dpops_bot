@@ -15,9 +15,11 @@ class DiscordBot(commands.Bot):
             command_prefix=commands.when_mentioned_or(self.bot_settings['command']),
             intents=Intents.all())
         self.remove_command('help')
+
+        self.backend_manager = backend_manager
         self.dpops_queries = dpops_wrapper
-        self.voters_manager = backend_manager.voters
-        self.bot_settings_manager = backend_manager.bot_settings_manager
+        self.voters_manager = self.backend_manager.voters
+        self.setting = self.backend_manager.bot_settings_manager
         self.rpc_wallet = xcash_manager
         self.load_cogs()
 
@@ -35,7 +37,7 @@ class DiscordBot(commands.Bot):
         print(notification_str)
 
     async def on_ready(self):
-        await self.change_presence(status=discord.Status.online, activity=discord.Game('Monitoring Delegates'))
+        await self.change_presence(status=discord.Status.online, activity=discord.Game('with blocks!'))
         print('DISCORD BOT : Logged in as')
         print(self.user.name)
         print(self.user.id)
