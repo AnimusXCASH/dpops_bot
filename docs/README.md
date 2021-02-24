@@ -17,8 +17,9 @@ Discord Bot monitor which can be deployed by anyone on their private server to a
 - [x] Server owner
     - [x] block tracking
         - [x] Register for automatic notifications when delegate produces new block
-    - [x] DPOPS Stats
-        - [ ] Daily overall statistical snapshots of delegate
+    - [x] DPOPS Stats notifications - multi time frames 
+        - [X] Daily overall statistical snapshots of delegate
+        - [x] Hourly overall statistical snapshots of delegate
     - [ ] Automatic notifications on sent payments to voters 
 
 - [ ] X-Cash DPOPS network queries
