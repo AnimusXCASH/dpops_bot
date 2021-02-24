@@ -1,7 +1,7 @@
 # OWNER 
 
-Commands available for owner of the Discord Community. This area of commands can be accessed
- only throught the public channels of the server so ownership rights can be verified
+Commands available for owner of the Discord Community. This area of commands can be accessed only throught the public 
+channels of the server so ownership rights can be verified
 
 ## Access entry command
 
@@ -37,7 +37,31 @@ channel id can be obtained
 @botTad sys set block monitor <ON/OFF>
 ```
 
-Before you turn on the monitor you MUST set starting block height as well as channel where bot has access to, otherwise the block monitor service will NOT wwork. 
+Before you turn on the monitor you MUST set starting block height as well as channel where bot has access to, 
+otherwise the block monitor service will NOT wwork. 
 
+### Delegate own stats tracking
 
+```text
+@botTag stats
+```
 
+#### Daily stats snapshot reports 
+You are required to tag the channel when setting up the tracker
+```text
+# Activate stats 
+@botTag stats daily #discord.TextChannel on
+
+# Deactivate
+@botTag stats daily #discord.TextChannel off
+```
+
+#### Hourly stats snapshot reports 
+You are required to tag the channel when setting up the tracker
+```text
+# Activate stats 
+@botTag stats daily #discord.TextChannel on
+
+# Deactivate
+@botTag stats daily #discord.TextChannel off
+```
