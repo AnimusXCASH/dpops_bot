@@ -60,7 +60,7 @@ class AutomaticTasks:
         block_data = self.bot.setting.get_setting(setting_name='new_block')
         if block_data["status"] == 1:
 
-            last_block_found =self.dpops_wrapper.delegate_api.get_last_block_found()[0]  
+            last_block_found = self.dpops_wrapper.delegate_api.get_last_block_found()[0]
             if not last_block_found.get("error"):
                 last_checked_block = int(block_data["value"])  # Get last check height as INT from database
                 last_produced_block = int(last_block_found["block_height"])
@@ -69,8 +69,8 @@ class AutomaticTasks:
                     print("we have new block")
                     block_channel = self.bot.get_channel(id=int(block_data["channel"]))
                     new_block = Embed(title=f':bricks: New block',
-                                    description=f'Height @ ***{int(last_block_found["block_height"]):,}***',
-                                    colour=Color.green())
+                                      description=f'Height @ ***{int(last_block_found["block_height"]):,}***',
+                                      colour=Color.green())
                     new_block.add_field(name=f":date: Time",
                                         value=f"```{datetime.fromtimestamp(int(last_block_found['block_date_and_time']))}```")
                     new_block.add_field(name=f":moneybag: Block Value",
@@ -79,8 +79,8 @@ class AutomaticTasks:
 
                     await block_channel.send(embed=new_block)
                     if self.bot.setting.update_settings_by_dict(setting_name="new_block",
-                                                                            value={"value": int(
-                                                                                last_block_found["block_height"])}):
+                                                                value={"value": int(
+                                                                    last_block_found["block_height"])}):
                         print("Last block marked successfully to db")
                     else:
                         print("there has been an issue when marking latest block in database")
@@ -90,8 +90,6 @@ class AutomaticTasks:
                 print(f'Could not get block status check DELEGATE: {last_block_found["error"]}')
         else:
             print("Service for delegate block notifcations turned off")
-
-
 
 
 def start_tasks(automatic_tasks):
@@ -114,8 +112,6 @@ def start_tasks(automatic_tasks):
                       CronTrigger(minute='02,04,06,08,10,12,14,16,18,20,22,24,26,'
                                          '28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58'), misfire_grace_time=2,
                       max_instances=20)
-
-
 
     scheduler.start()
     print('Started Chron Monitors : DONE')
