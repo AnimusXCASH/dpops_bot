@@ -26,6 +26,12 @@ Discord Bot monitor which can be deployed by anyone on their private server to a
 
 
 # How to's
+
+Check availabale commands through Discord with 
+```text
+@botTag help 
+```
+
 [Installation Instructions](INSTALLATION.md)
 
 [Activate Services as server owner](OWNER.md)
