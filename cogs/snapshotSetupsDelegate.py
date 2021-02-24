@@ -4,7 +4,7 @@ from discord import Colour, TextChannel
 from cogs.utils.customChecks import is_owner, is_public
 
 
-class DelegateSnaphostCommands(commands.Cog):
+class DelegateSnapshotCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.command_string = self.bot.get_command_str()
@@ -117,4 +117,4 @@ class DelegateSnaphostCommands(commands.Cog):
                                                               f"Please tag the channel #ChannelName. ",
                                                 destination=ctx.channel)
 def setup(bot):
-    bot.add_cog(DelegateSnaphostCommands(bot))
+    bot.add_cog(DelegateSnapshotCommands(bot))
