@@ -102,6 +102,19 @@ class DelegateSnaphostCommands(commands.Cog):
                                                               "where bot has access to.",
                                                 destination=ctx.channel)
 
-
+    @daily.error
+    async def daily_error(self, ctx, error):
+        if isinstance(error, commands.ChannelNotFound):
+            await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Channel Not Found",
+                                                error_details=f"Provided channel could not be found on your server. "
+                                                              f"Please tag the channel #ChannelName. ",
+                                                destination=ctx.channel)
+    @hourly.error
+    async def daily_error(self, ctx, error):
+        if isinstance(error, commands.ChannelNotFound):
+            await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Channel Not Found",
+                                                error_details=f"Provided channel could not be found on your server. "
+                                                              f"Please tag the channel #ChannelName. ",
+                                                destination=ctx.channel)
 def setup(bot):
     bot.add_cog(DelegateSnaphostCommands(bot))
