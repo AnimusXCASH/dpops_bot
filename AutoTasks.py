@@ -13,10 +13,10 @@ class AutomaticTasks:
         self.dpops_wrapper = dpops_wrapper
         self.bot = bot
 
-    async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict):
+    async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict, description: str):
         daily_stats = self.bot.get_channel(id=int(delegate_settings["channel"]))
         delegate_daily = Embed(title=f':bar_chart: {delegate_stats["delegate_name"]} Statistics',
-                               description=f'Daily delegate snapshot.',
+                               description=f'{description}',
                                colour=Color.blue(),
                                timestamp=datetime.utcnow())
         delegate_daily.add_field(name=f':medal: Delegate Rank',
@@ -116,7 +116,26 @@ class AutomaticTasks:
         if daily_settings["status"] == 1:
             if not delegate_stats.get("error"):
                 if daily_settings["status"] == 1:
-                    await self.delegate_overall_message(delegate_settings=daily_settings, delegate_stats=delegate_stats)
+                    await self.delegate_overall_message(delegate_settings=daily_settings, delegate_stats=delegate_stats,
+                                                        description='Daily Delegate Snapshot')
+            else:
+                print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
+        else:
+            print("Daily snapshots are not included")
+
+    async def delegate_hourly_snapshots(self):
+        """
+        Send daily snapshot of the delegate overall performance if activated
+        """
+        delegate_stats = self.dpops_wrapper.delegate_api.get_stats()
+        hourly_settings = self.bot.setting.get_setting(setting_name='delegate_hourly')
+        if hourly_settings["status"] == 1:
+            if not delegate_stats.get("error"):
+                if hourly_settings["status"] == 1:
+                    await self.delegate_overall_message(delegate_settings=hourly_settings,
+                                                        delegate_stats=delegate_stats,
+                                                        description='Hourly Delegate Snapshot'
+                                                        )
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
@@ -131,19 +150,18 @@ def start_tasks(automatic_tasks):
     """
     scheduler = AsyncIOScheduler()
     print('Started Chron Monitors')
-    # scheduler.add_job(automatic_tasks.block_monitor,CronTrigger(hour='02',second='02'), misfire_grace_time=2,
-    #                   max_instances=20)
-    #
-    # TODO update to daily before release
+
     scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
-                      CronTrigger(second='00'), misfire_grace_time=2, max_instances=20)
+                      CronTrigger(hour='23', minute='59', second='59'), misfire_grace_time=2, max_instances=20)
+    scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
+                      CronTrigger(minute='00'), misfire_grace_time=2, max_instances=20)
     #
     # scheduler.add_job(automatic_tasks.delegate_ranks, CronTrigger(hour='02', second='02'), misfire_grace_time=2,
     #                   max_instances=20)
-    # scheduler.add_job(automatic_tasks.delegate_last_block_check,
-    #                   CronTrigger(minute='02,04,06,08,10,12,14,16,18,20,22,24,26,'
-    #                                      '28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58'), misfire_grace_time=2,
-    #                   max_instances=20)
+    scheduler.add_job(automatic_tasks.delegate_last_block_check,
+                      CronTrigger(minute='02,04,06,08,10,12,14,16,18,20,22,24,26,'
+                                         '28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58'), misfire_grace_time=2,
+                      max_instances=20)
 
     scheduler.start()
     print('Started Chron Monitors : DONE')
