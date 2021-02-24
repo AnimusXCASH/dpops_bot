@@ -36,7 +36,7 @@ class BotSetup(commands.Cog):
                  "value": f"```{self.command_string}blocks chn <#discord.Channel>```"},
                 {"name": ":two: Set Starting height",
                  "value": f"```{self.command_string}blocks height <block height INT>```"},
-                {"name": ":two: Set Starting height",
+                {"name": ":three: Set Starting height",
                  "value": f"```{self.command_string}blocks monitor <on/off>```"},
                 {"name": ":warning: Warning ",
                  "value": f"Be sure that the bot has required permissions to view and write to the channel, "
