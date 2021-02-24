@@ -36,7 +36,7 @@ class DelegateSnapshotCommands(commands.Cog):
             await customMessages.embed_builder(ctx=ctx, c=Colour.green(), title=title, description=description,
                                                list_of_commands=list_of_commands)
 
-    @stats.command
+    @stats.command()
     async def daily(self, ctx, chn: TextChannel, status: str):
         """
         Operate with daily settings on notifications
@@ -99,22 +99,24 @@ class DelegateSnapshotCommands(commands.Cog):
                                                 error_details="In order to be able to access this area of "
                                                               " commands, you MUST be a Discord Server Owner and "
                                                               "command executed on public channel of the community "
-                                                              "where bot has access to.",
-                                                destination=ctx.channel)
+                                                              "where bot has access to, so ownership rights can be "
+                                                              "checked.")
 
     @daily.error
     async def daily_error(self, ctx, error):
         if isinstance(error, commands.ChannelNotFound):
             await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Channel Not Found",
                                                 error_details=f"Provided channel could not be found on your server. "
-                                                              f"Please tag the channel #ChannelName. ",
-                                                destination=ctx.channel)
+                                                              f"Please tag the channel #ChannelName. ")
+
     @hourly.error
-    async def daily_error(self, ctx, error):
+    async def hourly_error(self, ctx, error):
         if isinstance(error, commands.ChannelNotFound):
             await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Channel Not Found",
                                                 error_details=f"Provided channel could not be found on your server. "
                                                               f"Please tag the channel #ChannelName. ",
                                                 destination=ctx.channel)
+
+
 def setup(bot):
     bot.add_cog(DelegateSnapshotCommands(bot))
