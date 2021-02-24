@@ -4,7 +4,7 @@ from discord import Intents
 from utils.tools import Helpers
 
 cogs_to_load = ["cogs.help", 'cogs.autoFunctions','cogs.botSetup',
-                "delegate.delegateCommands", "delegate.voterCommands"]
+                "delegate.delegateCommands", "delegate.voterCommands","cogs.snapshotSetupsDelegate"]
 
 
 class DiscordBot(commands.Bot):
