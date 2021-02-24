@@ -1,14 +1,7 @@
 from discord.ext import commands
 from cogs.utils import customMessages
-from discord import Colour, TextChannel, ChannelType
-
-
-def is_owner(ctx):
-    return int(ctx.message.author.id) == int(ctx.message.guild.owner.id)
-
-
-def is_public(ctx):
-    return ctx.message.channel.type != ChannelType.private
+from discord import Colour, TextChannel
+from cogs.utils.customChecks import is_owner, is_public
 
 
 class BotSetup(commands.Cog):
