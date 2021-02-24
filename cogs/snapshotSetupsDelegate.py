@@ -14,7 +14,7 @@ class DelegateSnapshotCommands(commands.Cog):
         if status == 'on':
             return 1
         elif status == 'off':
-            return 2
+            return 0
 
     @commands.group()
     @commands.check(is_public)
@@ -44,9 +44,10 @@ class DelegateSnapshotCommands(commands.Cog):
         status = status.lower()
         if status and status in ["on", "off"]:
             status_code = self.get_status_number(status=status)
-            if self.bot.bot_settings_manager.update_settings_by_dict(setting_name="delegate_daily",
-                                                                     value={"status": int(status_code),
-                                                                            "channel": int(chn.id)}):
+
+            if self.bot.setting.update_settings_by_dict(setting_name="delegate_daily",
+                                                        value={"status": int(status_code),
+                                                               "channel": int(chn.id)}):
                 await customMessages.system_message(ctx=ctx, c=Colour.green(), title="Daily Stats Notifications",
                                                     error_details=f"You have successfully set/updated ***Daily "
                                                                   f"statistic monitor*** for delegate @ 23:59:59 every"
@@ -72,9 +73,9 @@ class DelegateSnapshotCommands(commands.Cog):
         status = status.lower()
         if status and status in ["on", "off"]:
             status_code = self.get_status_number(status=status)
-            if self.bot.bot_settings_manager.update_settings_by_dict(setting_name="delegate_hourly",
-                                                                     value={"status": int(status_code),
-                                                                            "channel": int(chn.id)}):
+            if self.bot.setting.update_settings_by_dict(setting_name="delegate_hourly",
+                                                        value={"status": int(status_code),
+                                                               "channel": int(chn.id)}):
                 await customMessages.system_message(ctx=ctx, c=Colour.green(), title="Hourly Stats Notifications",
                                                     error_details=f"You have successfully set/updated ***Hourly "
                                                                   f"statistic monitor*** every hour on channel"
