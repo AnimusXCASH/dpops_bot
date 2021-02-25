@@ -1,5 +1,7 @@
 
 ![banner](../docs/header.png)
+[![CodeFactor](https://www.codefactor.io/repository/github/animusxcash/dpops_bot/badge)](https://www.codefactor.io/repository/github/animusxcash/dpops_bot)
+![Forks](https://img.shields.io/github/forks/animusxcash/dpops_bot?style=plastic)
 # About
 Discord Bot monitor which can be deployed by anyone on their private server to allow server members interract with DPOPS api.
 
