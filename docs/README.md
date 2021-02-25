@@ -1,5 +1,7 @@
 
 ![banner](../docs/header.png)
+[![CodeFactor](https://www.codefactor.io/repository/github/animusxcash/dpops_bot/badge)](https://www.codefactor.io/repository/github/animusxcash/dpops_bot)
+![Forks](https://img.shields.io/github/forks/animusxcash/dpops_bot?style=plastic)
 # About
 Discord Bot monitor which can be deployed by anyone on their private server to allow server members interract with DPOPS api.
 
@@ -17,24 +19,31 @@ Discord Bot monitor which can be deployed by anyone on their private server to a
 - [x] Server owner
     - [x] block tracking
         - [x] Register for automatic notifications when delegate produces new block
-    - [x] DPOPS Stats
-        - [ ] Daily overall statistical snapshots of delegate
+    - [x] DPOPS Stats notifications - multi time frames 
+        - [X] Daily overall statistical snapshots of delegate
+        - [x] Hourly overall statistical snapshots of delegate
     - [ ] Automatic notifications on sent payments to voters 
 
 - [ ] X-Cash DPOPS network queries
 
 
 # How to's
-[Installation Instructions](INSTALLATION.md)
 
-[Activate Services as server owner](OWNER.md)
+Check availabale commands through Discord with 
+```text
+@botTag help 
+```
+
+[Installation Instructions](../docs/INSTALLATION.md)
+
+[Activate Services as server owner](../docs/OWNER.md)
 
 # Command map 
-[Commands for Voters](VOTER.md)
+[Commands for Voters](../docs/VOTER.md)
 
 [Commands for Discord Server Owners](OWNER.md)
 
-[Other Commands](OTHER.md)
+[Other Commands](../docs/OTHER.md)
     
 
 # Contribute

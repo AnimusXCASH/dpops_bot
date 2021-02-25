@@ -17,7 +17,7 @@ class BotSettingsManager:
         try:
             result = self.bot_settings.update_one({"setting": setting_name},
                                                   {"$set": value})
-            print(result)
-            return result.modified_count > 0
+            return result.matched_count > 0
         except Exception as e:
+            print(e)
             return False

@@ -75,7 +75,7 @@ async def system_message(ctx, c, title: str, error_details: str, destination = N
     sys_msg.add_field(name=f'Message',
                       value=f'{error_details}')
     if not destination:
-        await ctx.author.send(sys_msg)
+        await ctx.author.send(embed=sys_msg)
     else:
         await destination.send(embed=sys_msg)
 
@@ -130,5 +130,3 @@ async def global_stats(destination, data: dict, vote_recount: bool = None):
 
     await destination.send(embed=global_stats)
 
-
-# async def new_xpayment_block(block_data:dict,)
