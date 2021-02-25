@@ -111,8 +111,8 @@ class BotSetup(commands.Cog):
                                                               f"Channel and starting block height need to be provided"
                                                               f" first before you can activate block monitor.\n"
                                                               f" Current Status:"
-                                                              f"Block Height: {current['value']}\n"
-                                                              f"Channel: {current['channel']}",
+                                                              f"> Block Height: {current['value']}\n"
+                                                              f"> Channel: {current['channel']}",
                                                 destination=ctx.channel)
 
     @owner.error
