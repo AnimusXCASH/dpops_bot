@@ -34,16 +34,16 @@ Check availabale commands through Discord with
 @botTag help 
 ```
 
-[Installation Instructions](INSTALLATION.md)
+[Installation Instructions](../docs/INSTALLATION.md)
 
-[Activate Services as server owner](OWNER.md)
+[Activate Services as server owner](../docs/OWNER.md)
 
 # Command map 
-[Commands for Voters](VOTER.md)
+[Commands for Voters](../docs/VOTER.md)
 
 [Commands for Discord Server Owners](OWNER.md)
 
-[Other Commands](OTHER.md)
+[Other Commands](../docs/OTHER.md)
     
 
 # Contribute
