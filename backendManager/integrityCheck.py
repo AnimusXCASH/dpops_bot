@@ -3,7 +3,7 @@ class IntegrityCheck(object):
         self.connection = connection
         self.dpops_delegate = self.connection["DpopsDelegate"]  #
         self.required_collections = ["votersDb", "botSettings"]
-        self.required_documents = ["new_block", "delegate_daily" , "delegate_hourly"]
+        self.required_documents = ["new_block", "delegate_daily", "delegate_hourly", 'payment_notifications']
 
     def check_collections(self):
         """
