@@ -40,3 +40,8 @@ class VotersManager:
                                                    {"$set": {"paymentNotifications": int(status),
                                                              "lastProcessed": int(timestamp)}})
         return result.modified_count > 0
+
+    def payment_notifications_applied(self):
+        result = list(self.voters_collection.find({"paymentNotifications":{"$gt":0}}))
+
+        return result
