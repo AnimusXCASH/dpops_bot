@@ -1,6 +1,7 @@
 from discord.ext import commands
 from delegate.tools.customMessages import embed_builder, delegate_stats, get_last_blocks, get_last_payments, state_info, \
     sys_message
+from datetime import datetime
 from discord import Colour, Embed
 from re import match
 
@@ -10,6 +11,13 @@ class VoterCommands(commands.Cog):
         self.bot = bot
         self.command_string = self.bot.get_command_str()
         self.delegate_api_access = self.bot.dpops_queries.delegate_api
+
+    @staticmethod
+    def get_status_number(status: str):
+        if status == 'on':
+            return 1
+        elif status == 'off':
+            return 0
 
     @commands.group(aliases=["v"])
     async def voter(self, ctx):
@@ -26,6 +34,8 @@ class VoterCommands(commands.Cog):
                               {"name": ":mag_right: Check current state in Delegate",
                                "value": f"```{self.command_string}voter state <public address>```\n"
                                         f"`Aliases: nfo, i`"},
+                              {"name": ":mega: Apply for available automatic notifications",
+                               "value": f"```{self.command_string}voter notify```"},
                               {"name": ":warning: Important :warning: ",
                                "value": f"`If you have registered yourself into Discord system than ***public address***"
                                         f" is not needed when executing commands above. Your public key will be "
@@ -55,6 +65,68 @@ class VoterCommands(commands.Cog):
                               ]
             await embed_builder(ctx=ctx, title=title, description=description, data=list_of_values,
                                 destination=1, c=Colour.dark_orange())
+
+    @voter.group()
+    async def notify(self, ctx):
+        if ctx.invoked_subcommand is None:
+            title = 'Automatic notifications system'
+            description = "Bellow are all availabale services which allow you to apply your registered public key " \
+                          "to be monitored for various activities. "
+
+            list_of_values = [{"name": ":money_with_wings: Get notifications to DM when delegate sends you payment",
+                               "value": f"{self.command_string}voter notify reward <on/off>"}
+
+                              ]
+            await embed_builder(ctx=ctx, title=title, description=description, data=list_of_values,
+                                destination=1, c=Colour.dark_orange())
+
+    @notify.group()
+    async def reward(self, ctx, status: str):
+        status = status.lower()
+        if self.bot.voters_manager.check_voter(ctx.author.id):
+            if status and status in ["on", "off"]:
+                status_code = self.get_status_number(status=status)
+                voter_details = self.bot.voters_manager.get_voter(ctx.author.id)
+                public_address = voter_details["publicKey"]
+                payments = list(reversed(
+                    self.bot.dpops_queries.delegate_api.public_address_payments(public_address=public_address)))[:1]
+                last_one = payments[0]
+                if self.bot.voters_manager.update_payment_notification_status(user_id=ctx.author.id, status=status_code,
+                                                                              timestamp=last_one["date_and_time"]):
+                    details = f"You have successfully activate automatic payment notifications. Bot will send you " \
+                              f"DM when payment is processed. Please make sure as well that bot can contact you over " \
+                              f"DM otherwise message will not come through."
+                    await sys_message(ctx=ctx, details=details, c=Colour.green())
+
+                    if status == "on":
+                        last_sent_payment = Embed(title=":incoming_envelope: Last Payment",
+                                                  description="Details of last payment sent from delegate",
+                                                  colour=Colour.green())
+                        last_sent_payment.set_author(name=f'{self.bot.user}')
+                        last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
+                        last_sent_payment.add_field(name=f':calendar: Time Of payment',
+                                                    value=f'{datetime.fromtimestamp(int(last_one["date_and_time"]))}')
+                        last_sent_payment.add_field(name=f':money_with_wings: Xcash Amount',
+                                                    value=f'`{round(int(last_one["total"]) / (10 ** 6), 6):,} XCASH`')
+                        last_sent_payment.add_field(name=f':hash:Transaction Hash',
+                                                    value=f'```{last_one["tx_hash"]}```',
+                                                    inline=False)
+                        last_sent_payment.add_field(name=f':key: Transaction Key',
+                                                    value=f'```{last_one["tx_key"]}```',
+                                                    inline=False)
+                        last_sent_payment.set_footer(text='Thank you for voting!')
+                        await ctx.author.send(embed=last_sent_payment)
+                else:
+                    details = "It seems like there haas been a backend issue. Please try again later or open github " \
+                              "ticket and let us know."
+                    await sys_message(ctx=ctx, c=Colour.red(), details=details)
+            else:
+                details = f"You have provided wrong status. Available are ***on/off*** while yours was {status}"
+                await sys_message(ctx=ctx, c=Colour.red(), details=details)
+        else:
+            details = f"You can not apply to automatic payment notifications, because you have not registered " \
+                      f"yourself yet into the system"
+            await sys_message(ctx=ctx, details=details, c=Colour.red())
 
     @management.command()
     async def register(self, ctx, public_key: str):
@@ -116,7 +188,8 @@ class VoterCommands(commands.Cog):
 
         if public_address:
             if match(r'^XCA[A-Za-z0-9]{95}$|^XCB[A-Za-z0-9]{107}', public_address) is not None:
-                data = list(reversed(self.delegate_api_access.public_address_payments(public_address=public_address)))[:4]
+                data = list(reversed(self.delegate_api_access.public_address_payments(public_address=public_address)))[
+                       :4]
                 await get_last_payments(ctx=ctx, data=data)
 
             else:

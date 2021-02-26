@@ -31,6 +31,17 @@ class VotersManager:
 
         return result.deleted_count > 0
 
-    def get_voter(self,user_id:int):
-        result = self.voters_collection.find_one({"userId":int(user_id)})
+    def get_voter(self, user_id: int):
+        result = self.voters_collection.find_one({"userId": int(user_id)})
+        return result
+
+    def update_payment_notification_status(self, user_id: int, status: int, timestamp: int):
+        result = self.voters_collection.update_one({"userId": int(user_id)},
+                                                   {"$set": {"paymentNotifications": int(status),
+                                                             "lastProcessed": int(timestamp)}})
+        return result.modified_count > 0
+
+    def payment_notifications_applied(self):
+        result = list(self.voters_collection.find({"paymentNotifications":{"$gt":0}}))
+
         return result

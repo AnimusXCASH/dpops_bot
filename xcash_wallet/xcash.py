@@ -9,4 +9,4 @@ rpc_data = {
 
 class XcashManager:
     def __init__(self):
-        self.xcash_rpc = WalletRpc(rpc_data=rpc_data)
+        self.xcash_rpc_wallet = WalletRpc(rpc_data=rpc_data)
