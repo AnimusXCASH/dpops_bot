@@ -1,6 +1,7 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from cogs.utils.customMessages import global_stats, top_delegates
+from xcash_wallet.xcash import XcashManager
 from operator import itemgetter
 from discord import Color, Embed
 
@@ -10,8 +11,10 @@ import json
 
 class AutomaticTasks:
     def __init__(self, dpops_wrapper, bot):
+        self.xcash_manager = XcashManager()
         self.dpops_wrapper = dpops_wrapper
         self.bot = bot
+        self.command_string = self.bot.get_command_str()
 
     async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict, description: str):
         daily_stats = self.bot.get_channel(id=int(delegate_settings["channel"]))
@@ -141,6 +144,46 @@ class AutomaticTasks:
         else:
             print("Daily snapshots are not included")
 
+    async def system_payment_notifications(self):
+        payment_notifications = self.bot.setting.get_setting(setting_name='payment_notifications')
+        if payment_notifications["status"] == 1:
+            rpc_wallet_resp = self.xcash_manager.xcash_rpc_wallet.get_last_outgoing_transfers(
+                last_processed_height=payment_notifications["value"])
+            if rpc_wallet_resp["result"]:
+                new_outgoing = rpc_wallet_resp["result"]["out"]
+                payment_channel = self.bot.get_channel(id=int(payment_notifications["channel"]))
+                for tx in new_outgoing:
+
+                    payments_emb = Embed(title=f':incoming_envelope: I have sent out payments!',
+                                         description=f'Use `!voter payments` to check if you have '
+                                                     f'been part of the batch.',
+                                         colour=Color.dark_orange())
+                    payments_emb.set_thumbnail(url=self.bot.user.avatar_url)
+                    payments_emb.add_field(name=f":date: Time",
+                                           value=f"`{datetime.fromtimestamp(int(tx['timestamp']))}`")
+                    payments_emb.add_field(name=f":bricks: Block Height",
+                                           value=f"`{tx['height']}`",
+                                           inline=True)
+                    payments_emb.add_field(name=f":money_with_wings: Total sent in batch",
+                                           value=f"`{float(tx['amount']) / (10 ** 6):,} XCASH`",
+                                           inline=False)
+                    payments_emb.add_field(name=f":id: Transaction ID ",
+                                           value=f"```{tx['txid']}```",
+                                           inline=False)
+                    payments_emb.set_footer(text="Thank you for votes")
+                    payments_emb.set_author(name=f'{self.bot.user}', url='http://xpayment.x-network.eu/')
+                    await payment_channel.send(embed=payments_emb)
+                if self.bot.setting.update_settings_by_dict(setting_name="payment_notifications",
+                                                            value={"value": int(new_outgoing[-1]["height"])}):
+                    print("db updated successfully")
+                else:
+                    print("Could not update DB")
+            else:
+                print("No new payments done")
+
+    # async def send_payment_dms(self):
+
+
 
 def start_tasks(automatic_tasks):
     """
@@ -151,17 +194,19 @@ def start_tasks(automatic_tasks):
     scheduler = AsyncIOScheduler()
     print('Started Chron Monitors')
 
-    scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
-                      CronTrigger(hour='23', minute='59', second='59'), misfire_grace_time=2, max_instances=20)
-    scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
-                      CronTrigger(minute='00'), misfire_grace_time=2, max_instances=20)
+    # scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
+    #                   CronTrigger(hour='23', minute='59', second='59'), misfire_grace_time=2, max_instances=20)
+    # scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
+    #                   CronTrigger(minute='00'), misfire_grace_time=2, max_instances=20)
+    scheduler.add_job(automatic_tasks.system_payment_notifications,
+                      CronTrigger(second='00'), misfire_grace_time=2, max_instances=20)
     #
     # scheduler.add_job(automatic_tasks.delegate_ranks, CronTrigger(hour='02', second='02'), misfire_grace_time=2,
     #                   max_instances=20)
-    scheduler.add_job(automatic_tasks.delegate_last_block_check,
-                      CronTrigger(minute='02,04,06,08,10,12,14,16,18,20,22,24,26,'
-                                         '28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58'), misfire_grace_time=2,
-                      max_instances=20)
+    # scheduler.add_job(automatic_tasks.delegate_last_block_check,
+    #                   CronTrigger(minute='02,04,06,08,10,12,14,16,18,20,22,24,26,'
+    #                                      '28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58'), misfire_grace_time=2,
+    #                   max_instances=20)
 
     scheduler.start()
     print('Started Chron Monitors : DONE')
