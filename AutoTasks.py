@@ -230,21 +230,22 @@ def start_tasks(automatic_tasks):
     scheduler = AsyncIOScheduler()
     print('Started Chron Monitors')
 
-    # scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
-    #                   CronTrigger(hour='23', minute='59', second='59'), misfire_grace_time=2, max_instances=20)
-    # scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
-    #                   CronTrigger(minute='00'), misfire_grace_time=2, max_instances=20)
+    scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
+                      CronTrigger(hour='23', minute='59', second='59'), misfire_grace_time=2, max_instances=20)
+    scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
+                      CronTrigger(minute='00', second='00'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.system_payment_notifications,
-                      CronTrigger(second='00'), misfire_grace_time=2, max_instances=20)
-    scheduler.add_job(automatic_tasks.send_payment_dms,
                       CronTrigger(second='05'), misfire_grace_time=2, max_instances=20)
+    scheduler.add_job(automatic_tasks.send_payment_dms,
+                      CronTrigger(second='10'), misfire_grace_time=2, max_instances=20)
     #
     # scheduler.add_job(automatic_tasks.delegate_ranks, CronTrigger(hour='02', second='02'), misfire_grace_time=2,
     #                   max_instances=20)
-    # scheduler.add_job(automatic_tasks.delegate_last_block_check,
-    #                   CronTrigger(minute='02,04,06,08,10,12,14,16,18,20,22,24,26,'
-    #                                      '28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58'), misfire_grace_time=2,
-    #                   max_instances=20)
+    scheduler.add_job(automatic_tasks.delegate_last_block_check,
+                      CronTrigger(minute='02,04,06,08,10,12,14,16,18,20,22,24,26,'
+                                         '28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58', second='15'),
+                      misfire_grace_time=2,
+                      max_instances=20)
 
     scheduler.start()
     print('Started Chron Monitors : DONE')
