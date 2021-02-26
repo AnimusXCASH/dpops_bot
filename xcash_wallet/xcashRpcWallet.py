@@ -38,6 +38,21 @@ class WalletRpc:
 
         return response.json()
 
+    def get_last_outgoing_transfers(self, last_processed_height):
+        rpc_input = {
+            'method': "get_transfers",
+            'params': { "filter_by_height": True,
+                        "out": True,
+                        "min_height": last_processed_height - 1
+                       }
+        }
+
+        rpc_input.update({"jsonrpc": "2.0", "id": "0"})
+
+        response = requests.post(self.json_rpc_url, data=json.dumps(rpc_input), headers=self.headers)
+
+        return response.json()
+
     def get_transfers_by_tx_id(self, tx_id:str):
         rpc_input = {
             'method': "get_transfer_by_txid",
