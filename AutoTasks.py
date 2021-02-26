@@ -3,7 +3,7 @@ from apscheduler.triggers.cron import CronTrigger
 from cogs.utils.customMessages import global_stats, top_delegates
 from xcash_wallet.xcash import XcashManager
 from operator import itemgetter
-from discord import Color, Embed
+from discord import Colour, Embed
 
 from datetime import datetime
 import json
@@ -20,7 +20,7 @@ class AutomaticTasks:
         daily_stats = self.bot.get_channel(id=int(delegate_settings["channel"]))
         delegate_daily = Embed(title=f':bar_chart: {delegate_stats["delegate_name"]} Statistics',
                                description=f'{description}',
-                               colour=Color.blue(),
+                               colour=Colour.blue(),
                                timestamp=datetime.utcnow())
         delegate_daily.add_field(name=f':medal: Delegate Rank',
                                  value=f'```{delegate_stats["current_delegate_rank"]}```')
@@ -68,7 +68,7 @@ class AutomaticTasks:
             top_10 = newlist[0:10]
 
             stats_chn = self.bot.get_channel(id=self.bot.stats_channel_id)
-            await top_delegates(destination=stats_chn, c=Color.dark_orange(), data=top_10)
+            await top_delegates(destination=stats_chn, c=Colour.dark_orange(), data=top_10)
         else:
             error = all_delegates["error"]
             print(error)
@@ -89,7 +89,7 @@ class AutomaticTasks:
                     block_channel = self.bot.get_channel(id=int(block_data["channel"]))
                     new_block = Embed(title=f':bricks: New block',
                                       description=f'Height @ ***{int(last_block_found["block_height"]):,}***',
-                                      colour=Color.green())
+                                      colour=Colour.green())
                     new_block.add_field(name=f":date: Time",
                                         value=f"```{datetime.fromtimestamp(int(last_block_found['block_date_and_time']))}```")
                     new_block.add_field(name=f":moneybag: Block Value",
@@ -153,11 +153,10 @@ class AutomaticTasks:
                 new_outgoing = rpc_wallet_resp["result"]["out"]
                 payment_channel = self.bot.get_channel(id=int(payment_notifications["channel"]))
                 for tx in new_outgoing:
-
                     payments_emb = Embed(title=f':incoming_envelope: I have sent out payments!',
                                          description=f'Use `!voter payments` to check if you have '
                                                      f'been part of the batch.',
-                                         colour=Color.dark_orange())
+                                         colour=Colour.dark_orange())
                     payments_emb.set_thumbnail(url=self.bot.user.avatar_url)
                     payments_emb.add_field(name=f":date: Time",
                                            value=f"`{datetime.fromtimestamp(int(tx['timestamp']))}`")
@@ -181,8 +180,45 @@ class AutomaticTasks:
             else:
                 print("No new payments done")
 
-    # async def send_payment_dms(self):
+    async def send_payment_dms(self):
+        all_applied = self.bot.backend_manager.voters.payment_notifications_applied()
 
+        for voter in all_applied:
+            payments = list(reversed(
+                self.bot.dpops_queries.delegate_api.public_address_payments(public_address=voter["publicKey"])))[:1]
+
+            last_payment = payments[0]
+            from pprint import pprint
+            pprint(last_payment)
+
+            if int(last_payment["date_and_time"]) > int(voter["lastProcessed"]):
+                if self.bot.backend_manager.voters.update_payment_notification_status(user_id=voter["userId"], status=1,
+                                                                                      timestamp=int(
+                                                                                          last_payment[
+                                                                                              "date_and_time"])):
+                    user_destination = await self.bot.fetch_user(user_id=int(voter["userId"]))
+                    last_sent_payment = Embed(title=":incoming_envelope: New payment dispatched",
+                                              description="Delegate has sent you new payment/reward based on your votes",
+                                              colour=Colour.green())
+                    last_sent_payment.set_author(name=f'{self.bot.user}')
+                    last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
+                    last_sent_payment.add_field(name=f':calendar: Time Of payment',
+                                                value=f'{datetime.fromtimestamp(int(last_payment["date_and_time"]))}')
+                    last_sent_payment.add_field(name=f':money_with_wings: Xcash Amount',
+                                                value=f'`{round(int(last_payment["total"]) / (10 ** 6), 6):,} XCASH`')
+                    last_sent_payment.add_field(name=f':hash:Transaction Hash',
+                                                value=f'```{last_payment["tx_hash"]}```',
+                                                inline=False)
+                    last_sent_payment.add_field(name=f':key: Transaction Key',
+                                                value=f'```{last_payment["tx_key"]}```',
+                                                inline=False)
+                    last_sent_payment.set_footer(text='Thank you for voting!')
+                    try:
+                        await user_destination.send(embed=last_sent_payment)
+                    except Exception:
+                        pass
+                else:
+                    print('backend error')
 
 
 def start_tasks(automatic_tasks):
@@ -200,6 +236,8 @@ def start_tasks(automatic_tasks):
     #                   CronTrigger(minute='00'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.system_payment_notifications,
                       CronTrigger(second='00'), misfire_grace_time=2, max_instances=20)
+    scheduler.add_job(automatic_tasks.send_payment_dms,
+                      CronTrigger(second='05'), misfire_grace_time=2, max_instances=20)
     #
     # scheduler.add_job(automatic_tasks.delegate_ranks, CronTrigger(hour='02', second='02'), misfire_grace_time=2,
     #                   max_instances=20)
