@@ -1,5 +1,6 @@
 
 ![banner](../docs/header.png)
+
 [![CodeFactor](https://www.codefactor.io/repository/github/animusxcash/dpops_bot/badge)](https://www.codefactor.io/repository/github/animusxcash/dpops_bot)
 ![Forks](https://img.shields.io/github/forks/animusxcash/dpops_bot?style=plastic)
 # About
@@ -14,7 +15,8 @@ Discord Bot monitor which can be deployed by anyone on their private server to a
     - [x] Voter queries with or without registered profile
         - [x] Last 4 payments sent by delegate for voter
         - [x] Current state of the voter in delegate
-    - [ ] Apply for payment notifications
+    - [X] Apply for payment notifications
+        - [x] Apply for payment notifications when voters public key is in the batch of payments
 
 - [x] Server owner
     - [x] block tracking
@@ -22,7 +24,8 @@ Discord Bot monitor which can be deployed by anyone on their private server to a
     - [x] DPOPS Stats notifications - multi time frames 
         - [X] Daily overall statistical snapshots of delegate
         - [x] Hourly overall statistical snapshots of delegate
-    - [ ] Automatic notifications on sent payments to voters 
+    - [x] Automatic payment notifications
+        - [x] Notify to Discord channel when batch of payments is sent out
 
 - [ ] X-Cash DPOPS network queries
 
