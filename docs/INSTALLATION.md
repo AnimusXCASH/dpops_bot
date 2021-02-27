@@ -50,9 +50,54 @@ optimally (Mandatory)**
 $ pip3 install -r requirements.txt 
 ```
 
+### 2.4. Wallet RPC setup 
+Running wallet CLI RPC is required since the bot checks for outgoing payments to voters and send notification 
+to channel. 
 
-### 2.4. Discord part 
-#### 2.4.1. Register developer account required for bot to operate
+```text
+Steps:
+1. Download XCASH Cli wallet 2.0 or greater for operating system
+2. Import delegate wallet through  mnemonic seed
+3. Download the blockchain to computer or use remote daemon to connect to RPC wallet (see command bellow for remote)
+
+```
+
+#### Local daemon
+
+```text
+# Run on ubuntu in separated terminal
+./xcashd
+
+# Windows  in CMD terminal
+xcashd.exe 
+```
+
+Activate RPC
+
+Switch WALLET_NAME and PASSWORD with exact details used when importing to wallet
+
+```text
+# Ubuntu
+./xcash-wallet-rpc --wallet-file WALLET_NAME --password PASSWORD --rpc-bind-port 18285 
+
+#Windows
+xcash-wallet-rpc.exe --wallet-file WALLET_NAME --password PASSWORD --rpc-bind-port 18285
+```
+
+#### Remote Daemon
+
+Switch WALLET_NAME and PASSWORD with exact details used when importing to wallet and ADDRESS_OF_YOUR_NODE (Example: xpayment.x-network.eu:18281)
+```text
+# Ubuntu
+./xcash-wallet-rpc --wallet-file WALLET_NAME --password PASSWORD --rpc-bind-port 18285 --disable-rpc-login --confirm-external-bind --trusted-daemon --daemon-address ADDRESS_OF_YOUR_NODE:18281
+
+#Windows
+xcash-wallet-rpc.exe --wallet-file WALLET_NAME --password PASSWORD --rpc-bind-port 18285 --disable-rpc-login --confirm-external-bind --trusted-daemon --daemon-address ADDRESS_OF_YOUR_NODE:18281
+```
+
+
+### 2.5. Discord part 
+#### 2.5.1. Register developer account required for bot to operate
 - [Register Discord developer account](https://discordapp.com/developers)
 - Create application and obtain bot token, ID and activate Privileged gateway intents ([How to](https://www.writebots.com/discord-bot-token/))
 ```text
@@ -87,7 +132,7 @@ Required permissions:
 - Invite bot to the community by clicking on link created through previous step
     - All necessary permissions will be set automatically once bot joins
 
-#### 2.4.2. Bot Setup
+#### 2.5.2. Bot Setup
 
 go to main project folder and create file name:
 ```text
