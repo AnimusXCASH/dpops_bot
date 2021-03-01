@@ -2,7 +2,7 @@ import requests
 
 
 class DelegateApiAccess:
-    def __init__(self,dpops_api):
+    def __init__(self, dpops_api):
         self.api = dpops_api
         self.statistics = '/shareddelegateswebsitegetstatistics'
         self.blocks_found = '/getblocksfound'
@@ -38,7 +38,7 @@ class DelegateApiAccess:
             else:
                 return {"error": f"Could not get response from server"}
         except Exception as e:
-            return {"error":"There has been an exception. Please check get_last_block_found"}
+            return {"error": "There has been an exception. Please check get_last_block_found"}
 
     def pub_addr_info(self, pub_addr):
         delegate_api = self.api + self.public_address_info + f"?public_address={pub_addr}"
@@ -49,7 +49,7 @@ class DelegateApiAccess:
             return {"error": f"Could not get response from server"}
 
     def public_address_payments(self, public_address: str):
-        delegate_api = self.api + self.public_address_payment_info+f"?public_address={public_address}"
+        delegate_api = self.api + self.public_address_payment_info + f"?public_address={public_address}"
         response = requests.get(delegate_api)
         if response.status_code == 200:
             return response.json()

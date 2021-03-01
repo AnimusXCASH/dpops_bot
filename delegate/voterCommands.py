@@ -4,6 +4,7 @@ from delegate.tools.customMessages import embed_builder, delegate_stats, get_las
 from datetime import datetime
 from discord import Colour, Embed
 from re import match
+import time
 
 
 class VoterCommands(commands.Cog):
@@ -74,7 +75,7 @@ class VoterCommands(commands.Cog):
                           "to be monitored for various activities. "
 
             list_of_values = [{"name": ":money_with_wings: Get notifications to DM when delegate sends you payment",
-                               "value": f"{self.command_string}voter notify reward <on/off>"}
+                               "value": f"```{self.command_string}voter notify reward <on/off>```"}
 
                               ]
             await embed_builder(ctx=ctx, title=title, description=description, data=list_of_values,
@@ -88,9 +89,16 @@ class VoterCommands(commands.Cog):
                 status_code = self.get_status_number(status=status)
                 voter_details = self.bot.voters_manager.get_voter(ctx.author.id)
                 public_address = voter_details["publicKey"]
-                payments = list(reversed(
-                    self.bot.dpops_queries.delegate_api.public_address_payments(public_address=public_address)))[:1]
-                last_one = payments[0]
+
+                get_payments = self.bot.dpops_queries.delegate_api.public_address_payments(
+                    public_address=public_address)
+                # Check if not error in the returned == some payments have been done already
+                if not get_payments.get("error"):
+                    payments = list(reversed(get_payments))[:1]
+                    last_one = payments[0]
+                else:
+                    last_one = {"date_and_time": int(time.time())}
+
                 if self.bot.voters_manager.update_payment_notification_status(user_id=ctx.author.id, status=status_code,
                                                                               timestamp=last_one["date_and_time"]):
                     details = f"You have successfully activate automatic payment notifications. Bot will send you " \
@@ -99,23 +107,48 @@ class VoterCommands(commands.Cog):
                     await sys_message(ctx=ctx, details=details, c=Colour.green())
 
                     if status == "on":
-                        last_sent_payment = Embed(title=":incoming_envelope: Last Payment",
-                                                  description="Details of last payment sent from delegate",
+                        if not get_payments.get("error"):
+                            last_sent_payment = Embed(title=":incoming_envelope: Last Payment",
+                                                      description="Details of last payment sent from delegate",
+                                                      colour=Colour.green())
+                            last_sent_payment.set_author(name=f'{self.bot.user}')
+                            last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
+                            last_sent_payment.add_field(name=f':calendar: Time Of payment',
+                                                        value=f'{datetime.fromtimestamp(int(last_one["date_and_time"]))}')
+                            last_sent_payment.add_field(name=f':money_with_wings: Xcash Amount',
+                                                        value=f'`{round(int(last_one["total"]) / (10 ** 6), 6):,} XCASH`')
+                            last_sent_payment.add_field(name=f':hash:Transaction Hash',
+                                                        value=f'```{last_one["tx_hash"]}```',
+                                                        inline=False)
+                            last_sent_payment.add_field(name=f':key: Transaction Key',
+                                                        value=f'```{last_one["tx_key"]}```',
+                                                        inline=False)
+                            last_sent_payment.set_footer(text='Thank you for voting!')
+                            await ctx.author.send(embed=last_sent_payment)
+                        else:
+                            last_sent_payment = Embed(title=":incoming_envelope: Last Payment",
+                                                      description="Details of last payment sent from delegate",
+                                                      colour=Colour.green())
+                            last_sent_payment.set_author(name=f'{self.bot.user}')
+                            last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
+                            last_sent_payment.add_field(name=f":warning: Message",
+                                                        value=f'Delegate has no marked payments yet under the provided/'
+                                                              f'registered public key. Notification will be sent to '
+                                                              f'your DM as soon as first payment is processed. Please '
+                                                              f' allow private messages for the bot. ')
+                            last_sent_payment.set_footer(text='Thank you for voting!')
+                            await ctx.author.send(embed=last_sent_payment)
+                    else:
+                        last_sent_payment = Embed(title=":incoming_envelope: Reward Notifications",
                                                   colour=Colour.green())
                         last_sent_payment.set_author(name=f'{self.bot.user}')
                         last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
-                        last_sent_payment.add_field(name=f':calendar: Time Of payment',
-                                                    value=f'{datetime.fromtimestamp(int(last_one["date_and_time"]))}')
-                        last_sent_payment.add_field(name=f':money_with_wings: Xcash Amount',
-                                                    value=f'`{round(int(last_one["total"]) / (10 ** 6), 6):,} XCASH`')
-                        last_sent_payment.add_field(name=f':hash:Transaction Hash',
-                                                    value=f'```{last_one["tx_hash"]}```',
-                                                    inline=False)
-                        last_sent_payment.add_field(name=f':key: Transaction Key',
-                                                    value=f'```{last_one["tx_key"]}```',
-                                                    inline=False)
+                        last_sent_payment.add_field(name=f"Message",
+                                                    value=f'You have successfully turned OFF automatic notifications, '
+                                                          f'when rewards are distributed to you by the delegate.')
                         last_sent_payment.set_footer(text='Thank you for voting!')
                         await ctx.author.send(embed=last_sent_payment)
+
                 else:
                     details = "It seems like there haas been a backend issue. Please try again later or open github " \
                               "ticket and let us know."
@@ -125,7 +158,8 @@ class VoterCommands(commands.Cog):
                 await sys_message(ctx=ctx, c=Colour.red(), details=details)
         else:
             details = f"You can not apply to automatic payment notifications, because you have not registered " \
-                      f"yourself yet into the system"
+                      f"yourself yet into the system. Execute ***{self.command_string} voter management register " \
+                      f"<public key used for voting>***"
             await sys_message(ctx=ctx, details=details, c=Colour.red())
 
     @management.command()
@@ -188,10 +222,19 @@ class VoterCommands(commands.Cog):
 
         if public_address:
             if match(r'^XCA[A-Za-z0-9]{95}$|^XCB[A-Za-z0-9]{107}', public_address) is not None:
-                data = list(reversed(self.delegate_api_access.public_address_payments(public_address=public_address)))[
-                       :4]
-                await get_last_payments(ctx=ctx, data=data)
-
+                get_payments = self.delegate_api_access.public_address_payments(public_address=public_address)
+                if not get_payments.get("error"):
+                    data = list(reversed(get_payments))[:4]
+                    await get_last_payments(ctx=ctx, data=data)
+                else:
+                    last_payments = Embed(title=":incoming_envelope: Reward Notifications",
+                                          colour=Colour.green())
+                    last_payments.set_author(name=f'{self.bot.user}')
+                    last_payments.set_thumbnail(url=self.bot.user.avatar_url)
+                    last_payments.add_field(name=f":warning: Message",
+                                            value=f'You have not received any payments yet from delegate.')
+                    last_payments.set_footer(text='Thank you for voting!')
+                    await ctx.author.send(embed=last_payments)
             else:
                 await ctx.author.send(content='Wrong public address structure provided ')
         else:
@@ -211,7 +254,18 @@ class VoterCommands(commands.Cog):
         if public_address:
             if match(r'^XCA[A-Za-z0-9]{95}$|^XCB[A-Za-z0-9]{107}', public_address) is not None:
                 data = self.delegate_api_access.pub_addr_info(pub_addr=public_address)
-                await state_info(ctx=ctx, data=data)
+                if not data.get("error"):
+                    await state_info(ctx=ctx, data=data)
+                else:
+                    last_payments = Embed(title=":map: State Information",
+                                          colour=Colour.green())
+                    last_payments.set_author(name=f'{self.bot.user}')
+                    last_payments.set_thumbnail(url=self.bot.user.avatar_url)
+                    last_payments.add_field(name=f":warning: Message",
+                                            value=f'No information could be obtained currently on public key '
+                                                  f' `{public_address}`. Please try again later. ')
+                    last_payments.set_footer(text='Thank you for voting!')
+                    await ctx.author.send(embed=last_payments)
 
             else:
                 await ctx.author.send(content='Wrong public address structure provided ')
