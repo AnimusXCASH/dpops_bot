@@ -93,7 +93,7 @@ class VoterCommands(commands.Cog):
                 get_payments = self.bot.dpops_queries.delegate_api.public_address_payments(
                     public_address=public_address)
                 # Check if not error in the returned == some payments have been done already
-                if not get_payments.get("Error"):
+                if not get_payments.get("error"):
                     payments = list(reversed(get_payments))[:1]
                     last_one = payments[0]
                 else:
@@ -107,23 +107,48 @@ class VoterCommands(commands.Cog):
                     await sys_message(ctx=ctx, details=details, c=Colour.green())
 
                     if status == "on":
-                        last_sent_payment = Embed(title=":incoming_envelope: Last Payment",
-                                                  description="Details of last payment sent from delegate",
+                        if not get_payments.get("error"):
+                            last_sent_payment = Embed(title=":incoming_envelope: Last Payment",
+                                                      description="Details of last payment sent from delegate",
+                                                      colour=Colour.green())
+                            last_sent_payment.set_author(name=f'{self.bot.user}')
+                            last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
+                            last_sent_payment.add_field(name=f':calendar: Time Of payment',
+                                                        value=f'{datetime.fromtimestamp(int(last_one["date_and_time"]))}')
+                            last_sent_payment.add_field(name=f':money_with_wings: Xcash Amount',
+                                                        value=f'`{round(int(last_one["total"]) / (10 ** 6), 6):,} XCASH`')
+                            last_sent_payment.add_field(name=f':hash:Transaction Hash',
+                                                        value=f'```{last_one["tx_hash"]}```',
+                                                        inline=False)
+                            last_sent_payment.add_field(name=f':key: Transaction Key',
+                                                        value=f'```{last_one["tx_key"]}```',
+                                                        inline=False)
+                            last_sent_payment.set_footer(text='Thank you for voting!')
+                            await ctx.author.send(embed=last_sent_payment)
+                        else:
+                            last_sent_payment = Embed(title=":incoming_envelope: Last Payment",
+                                                      description="Details of last payment sent from delegate",
+                                                      colour=Colour.green())
+                            last_sent_payment.set_author(name=f'{self.bot.user}')
+                            last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
+                            last_sent_payment.add_field(name=f":warning: Message",
+                                                        value=f'Delegate has no marked payments yet under the provided/'
+                                                              f'registered public key. Notification will be sent to '
+                                                              f'your DM as soon as first payment is processed. Please '
+                                                              f' allow private messages for the bot. ')
+                            last_sent_payment.set_footer(text='Thank you for voting!')
+                            await ctx.author.send(embed=last_sent_payment)
+                    else:
+                        last_sent_payment = Embed(title=":incoming_envelope: Reward Notifications",
                                                   colour=Colour.green())
                         last_sent_payment.set_author(name=f'{self.bot.user}')
                         last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
-                        last_sent_payment.add_field(name=f':calendar: Time Of payment',
-                                                    value=f'{datetime.fromtimestamp(int(last_one["date_and_time"]))}')
-                        last_sent_payment.add_field(name=f':money_with_wings: Xcash Amount',
-                                                    value=f'`{round(int(last_one["total"]) / (10 ** 6), 6):,} XCASH`')
-                        last_sent_payment.add_field(name=f':hash:Transaction Hash',
-                                                    value=f'```{last_one["tx_hash"]}```',
-                                                    inline=False)
-                        last_sent_payment.add_field(name=f':key: Transaction Key',
-                                                    value=f'```{last_one["tx_key"]}```',
-                                                    inline=False)
+                        last_sent_payment.add_field(name=f"Message",
+                                                    value=f'You have successfully turned OFF automatic notifications, '
+                                                          f'when rewards are distributed to you by the delegate.')
                         last_sent_payment.set_footer(text='Thank you for voting!')
                         await ctx.author.send(embed=last_sent_payment)
+
                 else:
                     details = "It seems like there haas been a backend issue. Please try again later or open github " \
                               "ticket and let us know."
