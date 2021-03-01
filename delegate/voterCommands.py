@@ -222,10 +222,19 @@ class VoterCommands(commands.Cog):
 
         if public_address:
             if match(r'^XCA[A-Za-z0-9]{95}$|^XCB[A-Za-z0-9]{107}', public_address) is not None:
-                data = list(reversed(self.delegate_api_access.public_address_payments(public_address=public_address)))[
-                       :4]
-                await get_last_payments(ctx=ctx, data=data)
-
+                get_payments = self.delegate_api_access.public_address_payments(public_address=public_address)
+                if not get_payments.get("error"):
+                    data = list(reversed(get_payments))[:4]
+                    await get_last_payments(ctx=ctx, data=data)
+                else:
+                    last_payments = Embed(title=":incoming_envelope: Reward Notifications",
+                                          colour=Colour.green())
+                    last_payments.set_author(name=f'{self.bot.user}')
+                    last_payments.set_thumbnail(url=self.bot.user.avatar_url)
+                    last_payments.add_field(name=f":warning: Message",
+                                            value=f'You have not received any payments yet from delegate.')
+                    last_payments.set_footer(text='Thank you for voting!')
+                    await ctx.author.send(embed=last_payments)
             else:
                 await ctx.author.send(content='Wrong public address structure provided ')
         else:
@@ -245,7 +254,18 @@ class VoterCommands(commands.Cog):
         if public_address:
             if match(r'^XCA[A-Za-z0-9]{95}$|^XCB[A-Za-z0-9]{107}', public_address) is not None:
                 data = self.delegate_api_access.pub_addr_info(pub_addr=public_address)
-                await state_info(ctx=ctx, data=data)
+                if not data.get("error"):
+                    await state_info(ctx=ctx, data=data)
+                else:
+                    last_payments = Embed(title=":map: State Information",
+                                          colour=Colour.green())
+                    last_payments.set_author(name=f'{self.bot.user}')
+                    last_payments.set_thumbnail(url=self.bot.user.avatar_url)
+                    last_payments.add_field(name=f":warning: Message",
+                                            value=f'No information could be obtained currently on public key '
+                                                  f' `{public_address}`. Please try again later. ')
+                    last_payments.set_footer(text='Thank you for voting!')
+                    await ctx.author.send(embed=last_payments)
 
             else:
                 await ctx.author.send(content='Wrong public address structure provided ')
