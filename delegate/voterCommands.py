@@ -4,6 +4,7 @@ from delegate.tools.customMessages import embed_builder, delegate_stats, get_las
 from datetime import datetime
 from discord import Colour, Embed
 from re import match
+import time
 
 
 class VoterCommands(commands.Cog):
@@ -88,9 +89,16 @@ class VoterCommands(commands.Cog):
                 status_code = self.get_status_number(status=status)
                 voter_details = self.bot.voters_manager.get_voter(ctx.author.id)
                 public_address = voter_details["publicKey"]
-                payments = list(reversed(
-                    self.bot.dpops_queries.delegate_api.public_address_payments(public_address=public_address)))[:1]
-                last_one = payments[0]
+
+                get_payments = self.bot.dpops_queries.delegate_api.public_address_payments(
+                    public_address=public_address)
+                # Check if not error in the returned == some payments have been done already
+                if not get_payments.get("Error"):
+                    payments = list(reversed(get_payments))[:1]
+                    last_one = payments[0]
+                else:
+                    last_one = {"date_and_time": int(time.time())}
+
                 if self.bot.voters_manager.update_payment_notification_status(user_id=ctx.author.id, status=status_code,
                                                                               timestamp=last_one["date_and_time"]):
                     details = f"You have successfully activate automatic payment notifications. Bot will send you " \
@@ -125,7 +133,8 @@ class VoterCommands(commands.Cog):
                 await sys_message(ctx=ctx, c=Colour.red(), details=details)
         else:
             details = f"You can not apply to automatic payment notifications, because you have not registered " \
-                      f"yourself yet into the system"
+                      f"yourself yet into the system. Execute ***{self.command_string} voter management register " \
+                      f"<public key used for voting>***"
             await sys_message(ctx=ctx, details=details, c=Colour.red())
 
     @management.command()
