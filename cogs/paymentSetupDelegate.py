@@ -9,7 +9,7 @@ class PaymentsManager(commands.Cog):
         self.bot = bot
         self.command_string = self.bot.get_command_str()
 
-    @commands.command()
+    @commands.group()
     @commands.check(is_public)
     @commands.check(is_owner)
     async def payments(self, ctx):
