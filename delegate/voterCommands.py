@@ -75,7 +75,7 @@ class VoterCommands(commands.Cog):
                           "to be monitored for various activities. "
 
             list_of_values = [{"name": ":money_with_wings: Get notifications to DM when delegate sends you payment",
-                               "value": f"{self.command_string}voter notify reward <on/off>"}
+                               "value": f"```{self.command_string}voter notify reward <on/off>```"}
 
                               ]
             await embed_builder(ctx=ctx, title=title, description=description, data=list_of_values,
