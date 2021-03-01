@@ -182,43 +182,39 @@ class AutomaticTasks:
 
     async def send_payment_dms(self):
         all_applied = self.bot.backend_manager.voters.payment_notifications_applied()
-
         for voter in all_applied:
-            payments = list(reversed(
-                self.bot.dpops_queries.delegate_api.public_address_payments(public_address=voter["publicKey"])))[:1]
-
-            last_payment = payments[0]
-            from pprint import pprint
-            pprint(last_payment)
-
-            if int(last_payment["date_and_time"]) > int(voter["lastProcessed"]):
-                if self.bot.backend_manager.voters.update_payment_notification_status(user_id=voter["userId"], status=1,
-                                                                                      timestamp=int(
-                                                                                          last_payment[
-                                                                                              "date_and_time"])):
-                    user_destination = await self.bot.fetch_user(user_id=int(voter["userId"]))
-                    last_sent_payment = Embed(title=":incoming_envelope: New payment dispatched",
-                                              description="Delegate has sent you new payment/reward based on your votes",
-                                              colour=Colour.green())
-                    last_sent_payment.set_author(name=f'{self.bot.user}')
-                    last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
-                    last_sent_payment.add_field(name=f':calendar: Time Of payment',
-                                                value=f'{datetime.fromtimestamp(int(last_payment["date_and_time"]))}')
-                    last_sent_payment.add_field(name=f':money_with_wings: Xcash Amount',
-                                                value=f'`{round(int(last_payment["total"]) / (10 ** 6), 6):,} XCASH`')
-                    last_sent_payment.add_field(name=f':hash:Transaction Hash',
-                                                value=f'```{last_payment["tx_hash"]}```',
-                                                inline=False)
-                    last_sent_payment.add_field(name=f':key: Transaction Key',
-                                                value=f'```{last_payment["tx_key"]}```',
-                                                inline=False)
-                    last_sent_payment.set_footer(text='Thank you for voting!')
-                    try:
-                        await user_destination.send(embed=last_sent_payment)
-                    except Exception:
-                        pass
-                else:
-                    print('backend error')
+            get_payments = self.bot.dpops_queries.delegate_api.public_address_payments(public_address=voter["publicKey"])
+            if not get_payments.get("error"):
+                payments = list(reversed(get_payments))[:1]
+                last_payment = payments[0]
+                if int(last_payment["date_and_time"]) > int(voter["lastProcessed"]):
+                    if self.bot.backend_manager.voters.update_payment_notification_status(user_id=voter["userId"], status=1,
+                                                                                          timestamp=int(
+                                                                                              last_payment[
+                                                                                                  "date_and_time"])):
+                        user_destination = await self.bot.fetch_user(user_id=int(voter["userId"]))
+                        last_sent_payment = Embed(title=":incoming_envelope: New payment dispatched",
+                                                  description="Delegate has sent you new payment/reward based on your votes",
+                                                  colour=Colour.green())
+                        last_sent_payment.set_author(name=f'{self.bot.user}')
+                        last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
+                        last_sent_payment.add_field(name=f':calendar: Time Of payment',
+                                                    value=f'{datetime.fromtimestamp(int(last_payment["date_and_time"]))}')
+                        last_sent_payment.add_field(name=f':money_with_wings: Xcash Amount',
+                                                    value=f'`{round(int(last_payment["total"]) / (10 ** 6), 6):,} XCASH`')
+                        last_sent_payment.add_field(name=f':hash:Transaction Hash',
+                                                    value=f'```{last_payment["tx_hash"]}```',
+                                                    inline=False)
+                        last_sent_payment.add_field(name=f':key: Transaction Key',
+                                                    value=f'```{last_payment["tx_key"]}```',
+                                                    inline=False)
+                        last_sent_payment.set_footer(text='Thank you for voting!')
+                        try:
+                            await user_destination.send(embed=last_sent_payment)
+                        except Exception:
+                            pass
+                    else:
+                        print('backend error')
 
 
 def start_tasks(automatic_tasks):
