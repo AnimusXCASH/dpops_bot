@@ -212,7 +212,6 @@ class VoterCommands(commands.Cog):
 
     @voter.command(aliases=['p'])
     async def payments(self, ctx, public_address=None):
-
         if not public_address:
             user_data = self.bot.voters_manager.get_voter(ctx.author.id)
             try:
@@ -255,7 +254,7 @@ class VoterCommands(commands.Cog):
             if match(r'^XCA[A-Za-z0-9]{95}$|^XCB[A-Za-z0-9]{107}', public_address) is not None:
                 data = self.delegate_api_access.pub_addr_info(pub_addr=public_address)
                 if not data.get("error"):
-                    await state_info(ctx=ctx, data=data)
+                    await state_info(ctx=ctx, data=data,xcash_price_usdt=self.bot.dpops_queries.xcash_explorer.price())
                 else:
                     last_payments = Embed(title=":map: State Information",
                                           colour=Colour.green())
