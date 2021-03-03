@@ -144,14 +144,16 @@ with content:
 {
   "command": "COMMAND CHARACTER",
   "token": "BOT TOKEN OBTAINED IN STEP 2.4.1 ",
-  "dpopsApi": "dpops api link from dpops web page" 
+  "dpopsApi": "dpops api link from dpops web page" ,
+  "delegateName":"Exact name (case sensitive) of delegate"
 }
 
 Example:
 {
   "command": "!",  // Bot will listen to command string ! or @botTag
   "token": "cdscdscds.YAJ5uw.dockasmsdcasdcdascdasca",   // Bot token 
-  "dpopsApi": "http://xpayment.x-network.eu" 
+  "dpopsApi": "http://xpayment.x-network.eu",
+  'delegateName':"X-Payment-World"  // Exact name as written on DPOPS web page
 }
 ```
 
