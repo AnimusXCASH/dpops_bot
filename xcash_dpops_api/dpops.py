@@ -12,6 +12,6 @@ class Dpops:
     def __init__(self, dpops_api, delegate_name: str):
         self.foundation = "http://delegates.xcash.foundation/"
         self.delegate_api = DelegateApiAccess(dpops_api=dpops_api)
-        self.delegates = DpopsDelegates(self.foundation)
+        self.delegates = DpopsDelegates()
         self.xcash_explorer = XcashExplorer()
         self.calculator = DpopsCalculator(delegate_name=delegate_name)
