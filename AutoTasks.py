@@ -77,8 +77,8 @@ class AutomaticTasks:
         # Obtain settings and values from database as dict
         block_data = self.bot.setting.get_setting(setting_name='new_block')
         if block_data["status"] == 1:
-
             last_block_found = self.dpops_wrapper.delegate_api.get_last_block_found()[0]
+            print(last_block_found)
             if not last_block_found.get("error"):
                 last_checked_block = int(block_data["value"])  # Get last check height as INT from database
                 last_produced_block = int(last_block_found["block_height"])
