@@ -93,7 +93,7 @@ async def get_last_payments(ctx, data: list):
     await ctx.author.send(embed=payments_info)
 
 
-async def state_info(ctx, data: dict):
+async def state_info(ctx, data: dict, xcash_price_usdt: dict):
     try:
         current_pending = round(int(data["current_total"]) / (10 ** 6), 2)
     except  Exception:
@@ -102,10 +102,25 @@ async def state_info(ctx, data: dict):
     state_nfo = Embed(title=':map: State of voter',
                       description=f"```{data['public_address']}```",
                       colour=Colour.green())
+
+    if xcash_price_usdt.get("USD"):
+        try:
+            micro = current_pending
+            penny = xcash_price_usdt["USD"]
+            usd_final = round((micro * penny), 4)
+            total_payed = int(data["total"]) / (10 ** 7)
+            total_usd_payed_final = round(total_payed * penny,4)
+        except ZeroDivisionError:
+            usd_final = 0.00
+            total_usd_payed_final = 0.00
+
     state_nfo.add_field(name=':hourglass_flowing_sand: Current Pending',
-                        value=f'`{current_pending:,} XCASH` ')
-    state_nfo.add_field(name=':moneybag:  Total Payed ',
-                        value=f'`{round(int(data["total"]) / (10 ** 7), 6)}XCASH` ')
+                        value=f':coin: `{current_pending:,} XCASH` \n:flag_us: `${usd_final}`')
+
+
+    state_nfo.add_field(name=':moneybag: Total Payed ',
+                        value=f':coin: `{round(int(data["total"]) / (10 ** 7), 6)}XCASH`\n'
+                              f':flag_us: `${total_usd_payed_final}`')
 
     await ctx.author.send(embed=state_nfo)
 

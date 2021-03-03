@@ -74,7 +74,6 @@ class AutomaticTasks:
             print(error)
 
     async def delegate_last_block_check(self):
-
         # Obtain settings and values from database as dict
         block_data = self.bot.setting.get_setting(setting_name='new_block')
         if block_data["status"] == 1:
@@ -86,6 +85,16 @@ class AutomaticTasks:
 
                 if last_produced_block > last_checked_block:
                     print("we have new block")
+                    # Get the price of xcash on market
+                    xcash_value = self.bot.dpops_queries.xcash_explorer.price()
+                    if xcash_value.get("USD"):
+                        xcash_usd = xcash_value["USD"]
+                    else:
+                        xcash_usd = 0.0
+
+                    xcash_block_size = float(last_block_found['block_reward']) / (10 ** 6)
+                    usd_final = round((xcash_block_size * xcash_usd), 4)
+
                     block_channel = self.bot.get_channel(id=int(block_data["channel"]))
                     new_block = Embed(title=f':bricks: New block',
                                       description=f'Height @ ***{int(last_block_found["block_height"]):,}***',
@@ -93,7 +102,8 @@ class AutomaticTasks:
                     new_block.add_field(name=f":date: Time",
                                         value=f"```{datetime.fromtimestamp(int(last_block_found['block_date_and_time']))}```")
                     new_block.add_field(name=f":moneybag: Block Value",
-                                        value=f"```{float(last_block_found['block_reward']) / (10 ** 6):,} XCASH```",
+                                        value=f":coin: `{xcash_block_size:,} XCASH`\n"
+                                              f":flag_us: `${usd_final}`",
                                         inline=False)
 
                     await block_channel.send(embed=new_block)
@@ -152,7 +162,18 @@ class AutomaticTasks:
             if rpc_wallet_resp["result"]:
                 new_outgoing = rpc_wallet_resp["result"]["out"]
                 payment_channel = self.bot.get_channel(id=int(payment_notifications["channel"]))
+
+                # Get the price of xcash on market
+                xcash_value = self.bot.dpops_queries.xcash_explorer.price()
+                if xcash_value.get("USD"):
+                    xcash_usd = xcash_value["USD"]
+                else:
+                    xcash_usd = 0.0
+
                 for tx in new_outgoing:
+                    xcash_payment_value = float(tx['amount']) / (10 ** 6)
+                    usd_final = round((xcash_payment_value * xcash_usd), 4)
+
                     payments_emb = Embed(title=f':incoming_envelope: I have sent out payments!',
                                          description=f'Use `!voter payments` to check if you have '
                                                      f'been part of the batch.',
@@ -164,7 +185,8 @@ class AutomaticTasks:
                                            value=f"`{tx['height']}`",
                                            inline=True)
                     payments_emb.add_field(name=f":money_with_wings: Total sent in batch",
-                                           value=f"`{float(tx['amount']) / (10 ** 6):,} XCASH`",
+                                           value=f":coin: `{float(tx['amount']) / (10 ** 6):,} XCASH`\n"
+                                                 f":flag_us: `${usd_final}`",
                                            inline=False)
                     payments_emb.add_field(name=f":id: Transaction ID ",
                                            value=f"```{tx['txid']}```",
@@ -181,8 +203,13 @@ class AutomaticTasks:
                 print("No new payments done")
 
     async def send_payment_dms(self):
-        from pprint import pprint
         all_applied = self.bot.backend_manager.voters.payment_notifications_applied()
+        xcash_value = self.bot.dpops_queries.xcash_explorer.price()
+        if xcash_value.get("USD"):
+            xcash_usd = xcash_value["USD"]
+        else:
+            xcash_usd = 0.0
+
         for voter in all_applied:
             get_payments = self.bot.dpops_queries.delegate_api.public_address_payments(
                 public_address=voter["publicKey"])
@@ -196,16 +223,21 @@ class AutomaticTasks:
                                                                                           timestamp=int(
                                                                                               last_payment[
                                                                                                   "date_and_time"])):
+                        xcash_payment_value = int(last_payment["total"]) / (10 ** 6)
+                        usd_final = round((xcash_payment_value * xcash_usd), 4)
+
                         user_destination = await self.bot.fetch_user(user_id=int(voter["userId"]))
                         last_sent_payment = Embed(title=":incoming_envelope: New payment dispatched",
-                                                  description="Delegate has sent you new payment/reward based on your votes",
+                                                  description="Delegate has sent you new payment/reward based on your"
+                                                              " votes",
                                                   colour=Colour.green())
                         last_sent_payment.set_author(name=f'{self.bot.user}')
                         last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
                         last_sent_payment.add_field(name=f':calendar: Time Of payment',
                                                     value=f'{datetime.fromtimestamp(int(last_payment["date_and_time"]))}')
                         last_sent_payment.add_field(name=f':money_with_wings: Xcash Amount',
-                                                    value=f'`{round(int(last_payment["total"]) / (10 ** 6), 6):,} XCASH`')
+                                                    value=f':coin:`{round(int(last_payment["total"]) / (10 ** 6), 6):,}'
+                                                          f' XCASH`\n :flag_us: `${round(usd_final, 4)}`')
                         last_sent_payment.add_field(name=f':hash:Transaction Hash',
                                                     value=f'```{last_payment["tx_hash"]}```',
                                                     inline=False)
