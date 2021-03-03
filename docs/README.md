@@ -53,6 +53,13 @@ Check availabale commands through Discord with
 # Contribute
 If you would like to contribute to project please open up issue with proposal. Thank you!
 
+## Contributors 
+<a href="https://github.com/AnimusXCASH/dpops_bot/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=AnimusXCASH/dpops_bot" />
+</a>
+
+Made with [contributors-img](https://contrib.rocks).
+
 # Support 
 ## Discord X-Payment-Delegate Discord Server
 [Invite Link](https://discord.gg/pj9JCmTeJc) (User @Animus)
