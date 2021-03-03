@@ -11,7 +11,7 @@ if __name__ == "__main__":
     backend_manager = BackendManager()
     print("Checking required collections")
     backend_manager.integrity_check.check_collections()
-    dpops_wrapper = Dpops(dpops_api=bot_settings["dpopsApi"])
+    dpops_wrapper = Dpops(dpops_api=bot_settings["dpopsApi"], delegate_name=bot_settings["delegateName"])
     xcash_manager = XcashManager()
     bot = DiscordBot(dpops_wrapper, xcash_manager, backend_manager)
     auto_tasks = AutomaticTasks(dpops_wrapper, bot)
