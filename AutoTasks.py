@@ -35,7 +35,7 @@ class AutomaticTasks:
         delegate_daily.add_field(name=f':incoming_envelope:  Total Payments',
                                  value=f'```{delegate_stats["total_payments"]}```')
         delegate_daily.add_field(name=f':bricks: Blocks Found',
-                                 value=f'```{delegate_stats["total_payments"]}```')
+                                 value=f'```{delegate_stats["total_blocks_found"]}```')
         delegate_daily.add_field(name=f':judge: Blocks Verified',
                                  value=f'```{delegate_stats["block_verifier_total_rounds"]}```')
 
