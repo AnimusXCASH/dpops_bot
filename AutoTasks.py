@@ -181,14 +181,18 @@ class AutomaticTasks:
                 print("No new payments done")
 
     async def send_payment_dms(self):
+        from pprint import pprint
         all_applied = self.bot.backend_manager.voters.payment_notifications_applied()
         for voter in all_applied:
-            get_payments = self.bot.dpops_queries.delegate_api.public_address_payments(public_address=voter["publicKey"])
-            if not get_payments.get("error"):
+            get_payments = self.bot.dpops_queries.delegate_api.public_address_payments(
+                public_address=voter["publicKey"])
+
+            if isinstance(get_payments, list):
                 payments = list(reversed(get_payments))[:1]
                 last_payment = payments[0]
                 if int(last_payment["date_and_time"]) > int(voter["lastProcessed"]):
-                    if self.bot.backend_manager.voters.update_payment_notification_status(user_id=voter["userId"], status=1,
+                    if self.bot.backend_manager.voters.update_payment_notification_status(user_id=voter["userId"],
+                                                                                          status=1,
                                                                                           timestamp=int(
                                                                                               last_payment[
                                                                                                   "date_and_time"])):
@@ -226,12 +230,12 @@ def start_tasks(automatic_tasks):
     scheduler = AsyncIOScheduler()
     print('Started Chron Monitors')
 
-    scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
-                      CronTrigger(hour='23', minute='59', second='59'), misfire_grace_time=2, max_instances=20)
-    scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
-                      CronTrigger(minute='00', second='00'), misfire_grace_time=2, max_instances=20)
-    scheduler.add_job(automatic_tasks.system_payment_notifications,
-                      CronTrigger(second='05'), misfire_grace_time=2, max_instances=20)
+    # scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
+    #                   CronTrigger(hour='23', minute='59', second='59'), misfire_grace_time=2, max_instances=20)
+    # scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
+    #                   CronTrigger(minute='00', second='00'), misfire_grace_time=2, max_instances=20)
+    # scheduler.add_job(automatic_tasks.system_payment_notifications,
+    #                   CronTrigger(second='05'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.send_payment_dms,
                       CronTrigger(second='10'), misfire_grace_time=2, max_instances=20)
     #
