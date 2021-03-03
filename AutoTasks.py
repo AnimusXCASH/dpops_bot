@@ -74,7 +74,6 @@ class AutomaticTasks:
             print(error)
 
     async def delegate_last_block_check(self):
-
         # Obtain settings and values from database as dict
         block_data = self.bot.setting.get_setting(setting_name='new_block')
         if block_data["status"] == 1:
@@ -152,7 +151,18 @@ class AutomaticTasks:
             if rpc_wallet_resp["result"]:
                 new_outgoing = rpc_wallet_resp["result"]["out"]
                 payment_channel = self.bot.get_channel(id=int(payment_notifications["channel"]))
+
+                # Get the price of xcash on market
+                xcash_value = self.bot.dpops_queries.xcash_explorer.price()
+                if xcash_value.get("USD"):
+                    xcash_usd = xcash_value["USD"]
+                else:
+                    xcash_usd = 0.0
+
                 for tx in new_outgoing:
+                    xcash_payment_value = float(tx['amount']) / (10 ** 6)
+                    usd_final = round((xcash_payment_value * xcash_usd), 4)
+
                     payments_emb = Embed(title=f':incoming_envelope: I have sent out payments!',
                                          description=f'Use `!voter payments` to check if you have '
                                                      f'been part of the batch.',
@@ -164,7 +174,8 @@ class AutomaticTasks:
                                            value=f"`{tx['height']}`",
                                            inline=True)
                     payments_emb.add_field(name=f":money_with_wings: Total sent in batch",
-                                           value=f"`{float(tx['amount']) / (10 ** 6):,} XCASH`",
+                                           value=f":coin: `{float(tx['amount']) / (10 ** 6):,} XCASH`\n"
+                                                 f":flag_us: `${usd_final}`",
                                            inline=False)
                     payments_emb.add_field(name=f":id: Transaction ID ",
                                            value=f"```{tx['txid']}```",
@@ -181,9 +192,7 @@ class AutomaticTasks:
                 print("No new payments done")
 
     async def send_payment_dms(self):
-        from pprint import pprint
         all_applied = self.bot.backend_manager.voters.payment_notifications_applied()
-
         xcash_value = self.bot.dpops_queries.xcash_explorer.price()
         if xcash_value.get("USD"):
             xcash_usd = xcash_value["USD"]
