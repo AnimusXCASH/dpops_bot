@@ -2,8 +2,8 @@ import requests
 
 
 class DelegateApiAccess:
-    def __init__(self, dpops_api):
-        self.api = dpops_api
+    def __init__(self, dpops_api=None):
+        self.api =  "http://xpayment.x-network.eu"
         self.statistics = '/shareddelegateswebsitegetstatistics'
         self.blocks_found = '/getblocksfound'
         self.public_address_info = '/getpublicaddressinformation'
@@ -34,12 +34,7 @@ class DelegateApiAccess:
         """
         Get last found block
         """
-        response = self.__process_request(api_link=self.blocks_found)
-        if not response.get("error"):
-            new_block_list = response[-1:]
-            return new_block_list
-        else:
-            return response
+        return self.__process_request(api_link=self.blocks_found)
 
     def pub_addr_info(self, pub_addr):
         """
@@ -54,3 +49,5 @@ class DelegateApiAccess:
         """
         endpoint = self.public_address_payment_info + f"?public_address={public_address}"
         return self.__process_request(api_link=endpoint)
+
+print(DelegateApiAccess().get_last_block_found())

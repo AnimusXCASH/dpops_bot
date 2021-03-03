@@ -77,12 +77,13 @@ class AutomaticTasks:
         # Obtain settings and values from database as dict
         block_data = self.bot.setting.get_setting(setting_name='new_block')
         if block_data["status"] == 1:
-            last_block_found = self.dpops_wrapper.delegate_api.get_last_block_found()[0]
-            print(last_block_found)
-            if not last_block_found.get("error"):
+            response = self.dpops_wrapper.delegate_api.get_last_block_found()
+            if isinstance(response, list):
+                new_block_list = response[-1:]
+                last_block_found = new_block_list[0]
+
                 last_checked_block = int(block_data["value"])  # Get last check height as INT from database
                 last_produced_block = int(last_block_found["block_height"])
-
                 if last_produced_block > last_checked_block:
                     print("we have new block")
                     # Get the price of xcash on market
@@ -113,12 +114,12 @@ class AutomaticTasks:
                         print("Last block marked successfully to db")
                     else:
                         print("there has been an issue when marking latest block in database")
+
                 else:
                     print(f"No new blocks have been found by delegate @ f{datetime.utcnow()}")
+
             else:
-                print(f'Could not get block status check DELEGATE: {last_block_found["error"]}')
-        else:
-            print("Service for delegate block notifcations turned off")
+                print(f"{response['error']}")
 
     async def delegate_daily_snapshot(self):
         """
