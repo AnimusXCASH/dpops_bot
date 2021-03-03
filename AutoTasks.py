@@ -85,6 +85,16 @@ class AutomaticTasks:
 
                 if last_produced_block > last_checked_block:
                     print("we have new block")
+                    # Get the price of xcash on market
+                    xcash_value = self.bot.dpops_queries.xcash_explorer.price()
+                    if xcash_value.get("USD"):
+                        xcash_usd = xcash_value["USD"]
+                    else:
+                        xcash_usd = 0.0
+
+                    xcash_block_size = float(last_block_found['block_reward']) / (10 ** 6)
+                    usd_final = round((xcash_block_size * xcash_usd), 4)
+
                     block_channel = self.bot.get_channel(id=int(block_data["channel"]))
                     new_block = Embed(title=f':bricks: New block',
                                       description=f'Height @ ***{int(last_block_found["block_height"]):,}***',
@@ -92,7 +102,8 @@ class AutomaticTasks:
                     new_block.add_field(name=f":date: Time",
                                         value=f"```{datetime.fromtimestamp(int(last_block_found['block_date_and_time']))}```")
                     new_block.add_field(name=f":moneybag: Block Value",
-                                        value=f"```{float(last_block_found['block_reward']) / (10 ** 6):,} XCASH```",
+                                        value=f":coin: `{xcash_block_size:,} XCASH`\n"
+                                              f":flag_us: `${usd_final}`",
                                         inline=False)
 
                     await block_channel.send(embed=new_block)
