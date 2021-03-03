@@ -230,12 +230,12 @@ def start_tasks(automatic_tasks):
     scheduler = AsyncIOScheduler()
     print('Started Chron Monitors')
 
-    # scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
-    #                   CronTrigger(hour='23', minute='59', second='59'), misfire_grace_time=2, max_instances=20)
-    # scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
-    #                   CronTrigger(minute='00', second='00'), misfire_grace_time=2, max_instances=20)
-    # scheduler.add_job(automatic_tasks.system_payment_notifications,
-    #                   CronTrigger(second='05'), misfire_grace_time=2, max_instances=20)
+    scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
+                      CronTrigger(hour='23', minute='59', second='59'), misfire_grace_time=2, max_instances=20)
+    scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
+                      CronTrigger(minute='00', second='00'), misfire_grace_time=2, max_instances=20)
+    scheduler.add_job(automatic_tasks.system_payment_notifications,
+                      CronTrigger(second='05'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.send_payment_dms,
                       CronTrigger(second='10'), misfire_grace_time=2, max_instances=20)
     #
