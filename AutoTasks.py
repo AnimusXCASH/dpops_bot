@@ -183,6 +183,13 @@ class AutomaticTasks:
     async def send_payment_dms(self):
         from pprint import pprint
         all_applied = self.bot.backend_manager.voters.payment_notifications_applied()
+
+        xcash_value = self.bot.dpops_queries.xcash_explorer.price()
+        if xcash_value.get("USD"):
+            xcash_usd = xcash_value["USD"]
+        else:
+            xcash_usd = 0.0
+
         for voter in all_applied:
             get_payments = self.bot.dpops_queries.delegate_api.public_address_payments(
                 public_address=voter["publicKey"])
@@ -196,16 +203,21 @@ class AutomaticTasks:
                                                                                           timestamp=int(
                                                                                               last_payment[
                                                                                                   "date_and_time"])):
+                        xcash_payment_value = int(last_payment["total"]) / (10 ** 6)
+                        usd_final = round((xcash_payment_value * xcash_usd), 4)
+
                         user_destination = await self.bot.fetch_user(user_id=int(voter["userId"]))
                         last_sent_payment = Embed(title=":incoming_envelope: New payment dispatched",
-                                                  description="Delegate has sent you new payment/reward based on your votes",
+                                                  description="Delegate has sent you new payment/reward based on your"
+                                                              " votes",
                                                   colour=Colour.green())
                         last_sent_payment.set_author(name=f'{self.bot.user}')
                         last_sent_payment.set_thumbnail(url=self.bot.user.avatar_url)
                         last_sent_payment.add_field(name=f':calendar: Time Of payment',
                                                     value=f'{datetime.fromtimestamp(int(last_payment["date_and_time"]))}')
                         last_sent_payment.add_field(name=f':money_with_wings: Xcash Amount',
-                                                    value=f'`{round(int(last_payment["total"]) / (10 ** 6), 6):,} XCASH`')
+                                                    value=f':coin:`{round(int(last_payment["total"]) / (10 ** 6), 6):,}'
+                                                          f' XCASH`\n :flag_us: `${round(usd_final, 4)}`')
                         last_sent_payment.add_field(name=f':hash:Transaction Hash',
                                                     value=f'```{last_payment["tx_hash"]}```',
                                                     inline=False)
