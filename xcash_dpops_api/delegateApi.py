@@ -2,8 +2,8 @@ import requests
 
 
 class DelegateApiAccess:
-    def __init__(self, dpops_api=None):
-        self.api = "http://xpayment.x-network.eu"
+    def __init__(self, dpops_api):
+        self.api = dpops_api
         self.statistics = '/shareddelegateswebsitegetstatistics'
         self.blocks_found = '/getblocksfound'
         self.public_address_info = '/getpublicaddressinformation'
