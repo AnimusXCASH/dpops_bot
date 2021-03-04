@@ -158,7 +158,23 @@ class AutomaticTasks:
         else:
             print("Daily snapshots are not included")
 
-
+    async def delegate_6_h(self):
+        """
+        Send snapshot to channel every 6H
+        """
+        settings = self.bot.setting.get_setting(setting_name='delegate_6h')
+        if settings["status"] == 1:
+            delegate_stats = self.dpops_wrapper.delegate_api.get_stats()
+            if not delegate_stats.get("error"):
+                if settings["status"] == 1:
+                    await self.delegate_overall_message(delegate_settings=settings,
+                                                        delegate_stats=delegate_stats,
+                                                        description='6 H Delegate Snapshot'
+                                                        )
+            else:
+                print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
+        else:
+            print("Daily snapshots are not included")
 
     async def delegate_12_h(self):
         """
@@ -291,6 +307,8 @@ def start_tasks(automatic_tasks):
                       CronTrigger(hour='00,03,06,09,12,15,18,21', second='2'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_4_h,
                       CronTrigger(hour='00,04,08,12,16,20', second='2'), misfire_grace_time=2, max_instances=20)
+    scheduler.add_job(automatic_tasks.delegate_6_h,
+                      CronTrigger(hour='06,12,18', second='12'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_12_h,
                       CronTrigger(hour='00,12', second='10'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
