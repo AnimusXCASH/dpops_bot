@@ -40,38 +40,6 @@ class AutomaticTasks:
 
         await daily_stats.send(embed=delegate_daily)
 
-    async def send_dpops_stats(self):
-        try:
-            print('Getting global stats')
-            data = self.bot.dpops_queries.statistics.global_stats()
-            delegates_count = len(self.bot.dpops_queries.delegates.get_delegates())
-            data["totalDelegates"] = delegates_count
-            stats_chn = self.bot.get_channel(id=self.bot.stats_channel_id)
-            if not data.get("error"):
-                await global_stats(destination=stats_chn, data=data)
-            else:
-                error = data["error"]
-                print(error)
-        except Exception:
-            print("Error")
-
-    async def delegate_ranks(self):
-        all_delegates = self.bot.dpops_queries.delegates.get_delegates()
-        print("getting delegates")
-        if isinstance(all_delegates, list):
-            for delegate in all_delegates:
-                delegate["total_vote_count"] = int(delegate["total_vote_count"])
-
-            newlist = sorted(all_delegates, key=itemgetter('total_vote_count'), reverse=True)
-
-            top_10 = newlist[0:10]
-
-            stats_chn = self.bot.get_channel(id=self.bot.stats_channel_id)
-            await top_delegates(destination=stats_chn, c=Colour.dark_orange(), data=top_10)
-        else:
-            error = all_delegates["error"]
-            print(error)
-
     async def delegate_last_block_check(self):
         # Obtain settings and values from database as dict
         block_data = self.bot.setting.get_setting(setting_name='new_block')
