@@ -6,7 +6,6 @@ from operator import itemgetter
 from discord import Colour, Embed
 
 from datetime import datetime
-import json
 
 
 class AutomaticTasks:
