@@ -302,13 +302,15 @@ def start_tasks(automatic_tasks):
     scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
                       CronTrigger(minute='00', second='00'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_3_h,
-                      CronTrigger(hour='00,03,06,09,12,15,18,21', second='2'), misfire_grace_time=2, max_instances=20)
+                      CronTrigger(hour='00,03,06,09,12,15,18,21', minute='00', second='2'), misfire_grace_time=2,
+                      max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_4_h,
-                      CronTrigger(hour='00,04,08,12,16,20', second='2'), misfire_grace_time=2, max_instances=20)
+                      CronTrigger(hour='00,04,08,12,16,20', minute='00', second='2'), misfire_grace_time=2,
+                      max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_6_h,
-                      CronTrigger(hour='06,12,18', second='12'), misfire_grace_time=2, max_instances=20)
+                      CronTrigger(hour='06,12,18', minute='00', second='12'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_12_h,
-                      CronTrigger(hour='00,12', second='10'), misfire_grace_time=2, max_instances=20)
+                      CronTrigger(hour='00,12', minute='00', second='10'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_daily_snapshot,
                       CronTrigger(hour='23', minute='59', second='59'), misfire_grace_time=2, max_instances=20)
     scheduler.add_job(automatic_tasks.system_payment_notifications,
