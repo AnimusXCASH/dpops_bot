@@ -13,9 +13,12 @@ class HelpCommands(commands.Cog):
         title = ':sos: ___Available Command Categories__ :sos: '
         description = f"Available sub commands for `{self.command_string}help`"
         list_of_commands = [
-            {"name": "Commands for voter",
+            {"name": ":judge: Delegate on-demand",
+             "value": f"```{self.command_string}delegate```\n"
+                      f"`Alias:d`"},
+            {"name": ":ballot_box: Commands for voter",
              "value": f"```{self.command_string}voter```"},
-            {"name": "Commands for server owner",
+            {"name": ":toolbox: Commands for server owner",
              "value": f"```{self.command_string}sys```"},
         ]
         await customMessages.embed_builder(ctx=ctx, c=Colour.green(), title=title, description=description,
