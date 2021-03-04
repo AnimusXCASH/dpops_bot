@@ -92,9 +92,9 @@ class AutomaticTasks:
         """
         Send daily snapshot of the delegate overall performance if activated
         """
-        delegate_stats = self.dpops_wrapper.delegate_api.get_stats()
         daily_settings = self.bot.setting.get_setting(setting_name='delegate_daily')
         if daily_settings["status"] == 1:
+            delegate_stats = self.dpops_wrapper.delegate_api.get_stats()
             if not delegate_stats.get("error"):
                 if daily_settings["status"] == 1:
                     await self.delegate_overall_message(delegate_settings=daily_settings, delegate_stats=delegate_stats,
@@ -108,9 +108,9 @@ class AutomaticTasks:
         """
         Send daily snapshot of the delegate overall performance if activated
         """
-        delegate_stats = self.dpops_wrapper.delegate_api.get_stats()
         hourly_settings = self.bot.setting.get_setting(setting_name='delegate_hourly')
         if hourly_settings["status"] == 1:
+            delegate_stats = self.dpops_wrapper.delegate_api.get_stats()
             if not delegate_stats.get("error"):
                 if hourly_settings["status"] == 1:
                     await self.delegate_overall_message(delegate_settings=hourly_settings,
