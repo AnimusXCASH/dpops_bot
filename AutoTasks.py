@@ -1,8 +1,6 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from cogs.utils.customMessages import global_stats, top_delegates
 from xcash_wallet.xcash import XcashManager
-from operator import itemgetter
 from discord import Colour, Embed
 
 from datetime import datetime
@@ -102,7 +100,7 @@ class AutomaticTasks:
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
-            print("Daily snapshots are not included")
+            print("Daily snapshots deactivated")
 
     async def delegate_hourly_snapshots(self):
         """
@@ -120,7 +118,7 @@ class AutomaticTasks:
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
-            print("Daily snapshots are not included")
+            print("1h snapshot deactivated")
 
     async def delegate_3_h(self):
         """
@@ -138,7 +136,7 @@ class AutomaticTasks:
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
-            print("Daily snapshots are not included")
+            print("3h snapshot deactivated")
 
     async def delegate_4_h(self):
         """
@@ -156,7 +154,7 @@ class AutomaticTasks:
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
-            print("Daily snapshots are not included")
+            print("4h snapshot deactivated")
 
     async def delegate_6_h(self):
         """
@@ -174,7 +172,7 @@ class AutomaticTasks:
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
-            print("Daily snapshots are not included")
+            print("6h snapshot deactivated")
 
     async def delegate_12_h(self):
         """
@@ -192,7 +190,7 @@ class AutomaticTasks:
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
-            print("Daily snapshots are not included")
+            print("12h snapshot deactivated")
 
     async def system_payment_notifications(self):
         payment_notifications = self.bot.setting.get_setting(setting_name='payment_notifications')
