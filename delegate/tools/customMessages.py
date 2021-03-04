@@ -41,27 +41,27 @@ async def delegate_stats(destination, data: dict, thumbnail):
              'total_xcash_from_blocks_found': '2472432078918'}
      """
     data_embed = Embed(title=f'{data["delegate_name"]} Stats',
-                       description=f"Current statistics about X-Payment-World delegate operating on {data['fee']}% fee"
-                                   f" and minimum payment amount {data['minimum_amount']} XCASH.",
+                       description=f"Current statistics about X-Payment-World delegate operating on ***{round(float(data['fee']), 2)}%*** fee"
+                                   f" and minimum payment amount ***{int(data['minimum_amount']):,}*** XCASH.",
                        colour=Colour.green(),
                        timestamp=datetime.utcnow())
     data_embed.set_thumbnail(url=thumbnail)
     data_embed.add_field(name=f':first_place: Rank',
-                         value=f'`{data["current_delegate_rank"]}`')
-    data_embed.add_field(name=f':timer: Online',
-                         value=f'`{data["online_percentage"]}%`')
-    data_embed.add_field(name=f':bricks: Blocks Found',
-                         value=f'`{data["total_blocks_found"]}`')
-    data_embed.add_field(name=f':judge: Rounds Verifier',
-                         value=f'`{data["block_verifier_total_rounds"]}`')
-    data_embed.add_field(name=f':pick: XCASH Mined',
-                         value=f'`{int(float(data["total_xcash_from_blocks_found"]) / (10 ** 6)):,} XCASH`')
-    data_embed.add_field(name=f':incoming_envelope: Total Payments',
-                         value=f'`{data["total_payments"]}`')
+                         value=f'```{data["current_delegate_rank"]}```')
+    data_embed.add_field(name=f':timer: Online Percentage',
+                         value=f'```{data["online_percentage"]}%```')
     data_embed.add_field(name=f':cowboy: Total Voters',
-                         value=f'`{data["total_voters"]}`')
-    data_embed.add_field(name=f':envelope_with_arrow: Total Votes',
-                         value=f'`{int(float(data["total_votes"]) / (10 ** 7)):,} XCASH`')
+                         value=f'```{data["total_voters"]}```')
+    data_embed.add_field(name=f':ballot_box: Total Votes',
+                         value=f'```{int(float(data["total_votes"]) / (10 ** 7)):,} XCASH```')
+    data_embed.add_field(name=f':pick: Total XCASH',
+                         value=f'```{int(float(data["total_xcash_from_blocks_found"]) / (10 ** 6)):,} XCASH```')
+    data_embed.add_field(name=f':incoming_envelope: Total Payments',
+                         value=f'```{data["total_payments"]}```')
+    data_embed.add_field(name=f':bricks: Blocks Found',
+                         value=f'```{data["total_blocks_found"]}```')
+    data_embed.add_field(name=f':judge: Blocks Verified',
+                         value=f'```{data["block_verifier_total_rounds"]}```')
     await destination.send(embed=data_embed)
 
 
@@ -109,14 +109,13 @@ async def state_info(ctx, data: dict, xcash_price_usdt: dict):
             penny = xcash_price_usdt["USD"]
             usd_final = round((micro * penny), 4)
             total_payed = int(data["total"]) / (10 ** 7)
-            total_usd_payed_final = round(total_payed * penny,4)
+            total_usd_payed_final = round(total_payed * penny, 4)
         except ZeroDivisionError:
             usd_final = 0.00
             total_usd_payed_final = 0.00
 
     state_nfo.add_field(name=':hourglass_flowing_sand: Current Pending',
                         value=f':coin: `{current_pending:,} XCASH` \n:flag_us: `${usd_final}`')
-
 
     state_nfo.add_field(name=':moneybag: Total Payed ',
                         value=f':coin: `{round(int(data["total"]) / (10 ** 7), 6)}XCASH`\n'
