@@ -16,18 +16,43 @@ class DelegateSnapshotCommands(commands.Cog):
         elif status == 'off':
             return 0
 
+    async def stats_notifications_manager(self, ctx, setting_name: str, chn: TextChannel, status_code: int,
+                                          status: str,  frame:str):
+        if self.bot.setting.update_settings_by_dict(setting_name=setting_name,
+                                                    value={"status": int(status_code),
+                                                           "channel": int(chn.id)}):
+            await customMessages.system_message(ctx=ctx, c=Colour.green(), title=f"{frame} Stats Notifications",
+                                                error_details=f"You have successfully set/updated ***{frame} "
+                                                              f"statistic monitor*** on channel"
+                                                              f" ***{chn}*** to ***{status.upper()}***",
+                                                destination=ctx.channel)
+        else:
+            await customMessages.system_message(ctx=ctx, c=Colour.red(), title="System Error",
+                                                error_details="It seems like there haas been a backend issue."
+                                                              " Please try again later or open github ticket "
+                                                              "and let us know.",
+                                                destination=ctx.channel)
+
     @commands.group()
     @commands.check(is_public)
     @commands.check(is_owner)
     async def stats(self, ctx):
         if ctx.invoked_subcommand is None:
             title = ':sos: __System Commands :sos: '
-            description = f"Available commands to operate with automatic statistical notifications. "
+            description = f"Available timeframes for Delegate stats snapshots"
             list_of_commands = [
                 {"name": "Daily Stats Notifications",
                  "value": f"```{self.command_string}stats daily <#TextChannel> <on/off>```"},
-                {"name": "Hourly Stats Notifications",
+                {"name": "1H Notifications",
                  "value": f"```{self.command_string}stats hourly <#TextChannel> <on/off>```"},
+                {"name": "3H Stats Notifications",
+                 "value": f"```{self.command_string}stats h3 <#TextChannel> <on/off>```"},
+                {"name": "4H Stats Notifications",
+                 "value": f"```{self.command_string}stats h4 <#TextChannel> <on/off>```"},
+                {"name": "6H Stats Notifications",
+                 "value": f"```{self.command_string}stats h6 <#TextChannel> <on/off>```"},
+                {"name": "12H Stats Notifications",
+                 "value": f"```{self.command_string}stats h12 <#TextChannel> <on/off>```"},
                 {"name": ":warning: Warning ",
                  "value": f"Be sure that the bot has required permissions to view and write to the channel, "
                           f"where stats will be sent. "}
@@ -44,21 +69,8 @@ class DelegateSnapshotCommands(commands.Cog):
         status = status.lower()
         if status and status in ["on", "off"]:
             status_code = self.get_status_number(status=status)
-
-            if self.bot.setting.update_settings_by_dict(setting_name="delegate_daily",
-                                                        value={"status": int(status_code),
-                                                               "channel": int(chn.id)}):
-                await customMessages.system_message(ctx=ctx, c=Colour.green(), title="Daily Stats Notifications",
-                                                    error_details=f"You have successfully set/updated ***Daily "
-                                                                  f"statistic monitor*** for delegate @ 23:59:59 every"
-                                                                  f" day on ***{chn}*** to ***{status.upper()}***",
-                                                    destination=ctx.channel)
-            else:
-                await customMessages.system_message(ctx=ctx, c=Colour.red(), title="System Error",
-                                                    error_details="It seems like there haas been a backend issue."
-                                                                  " Please try again later or open github ticket "
-                                                                  "and let us know.",
-                                                    destination=ctx.channel)
+            await self.stats_notifications_manager(ctx=ctx, setting_name="delegate_daily", chn=chn,
+                                                   status_code=status_code, status=status)
         else:
             await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Wrong Status",
                                                 error_details=f"You have provided wrong status. Available are"
@@ -68,25 +80,79 @@ class DelegateSnapshotCommands(commands.Cog):
     @stats.command()
     async def hourly(self, ctx, chn: TextChannel, status: str):
         """
-        Operate with hourly operations
+        Hourly setup
         """
         status = status.lower()
         if status and status in ["on", "off"]:
             status_code = self.get_status_number(status=status)
-            if self.bot.setting.update_settings_by_dict(setting_name="delegate_hourly",
-                                                        value={"status": int(status_code),
-                                                               "channel": int(chn.id)}):
-                await customMessages.system_message(ctx=ctx, c=Colour.green(), title="Hourly Stats Notifications",
-                                                    error_details=f"You have successfully set/updated ***Hourly "
-                                                                  f"statistic monitor*** every hour on channel"
-                                                                  f" ***{chn}*** to ***{status.upper()}***",
-                                                    destination=ctx.channel)
-            else:
-                await customMessages.system_message(ctx=ctx, c=Colour.red(), title="System Error",
-                                                    error_details="It seems like there haas been a backend issue."
-                                                                  " Please try again later or open github ticket "
-                                                                  "and let us know.",
-                                                    destination=ctx.channel)
+            await self.stats_notifications_manager(ctx=ctx, setting_name="delegate_hourly", chn=chn,
+                                                   status_code=status_code, status=status,frame='1H')
+
+
+        else:
+            await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Wrong Status",
+                                                error_details=f"You have provided wrong status. Available are"
+                                                              f" ***on/off*** while yours was {status}",
+                                                destination=ctx.channel)
+
+    @stats.command()
+    async def h4(self, ctx, chn: TextChannel, status: str):
+        """
+        every 4h setup
+        """
+        status = status.lower()
+        if status and status in ["on", "off"]:
+            status_code = self.get_status_number(status=status)
+            await self.stats_notifications_manager(ctx=ctx, setting_name="delegate_4h", chn=chn,
+                                                   status_code=status_code, status=status, frame='4H')
+        else:
+            await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Wrong Status",
+                                                error_details=f"You have provided wrong status. Available are"
+                                                              f" ***on/off*** while yours was {status}",
+                                                destination=ctx.channel)
+
+    @stats.command()
+    async def h3(self, ctx, chn: TextChannel, status: str):
+        """
+        every 3h setup
+        """
+        status = status.lower()
+        if status and status in ["on", "off"]:
+            status_code = self.get_status_number(status=status)
+            await self.stats_notifications_manager(ctx=ctx, setting_name="delegate_3h", chn=chn,
+                                                   status_code=status_code, status=status, frame='3H')
+        else:
+            await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Wrong Status",
+                                                error_details=f"You have provided wrong status. Available are"
+                                                              f" ***on/off*** while yours was {status}",
+                                                destination=ctx.channel)
+
+    @stats.command()
+    async def h6(self, ctx, chn: TextChannel, status: str):
+        """
+        every 6h setup
+        """
+        status = status.lower()
+        if status and status in ["on", "off"]:
+            status_code = self.get_status_number(status=status)
+            await self.stats_notifications_manager(ctx=ctx, setting_name="delegate_6h", chn=chn,
+                                                   status_code=status_code, status=status, frame=f'6H')
+        else:
+            await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Wrong Status",
+                                                error_details=f"You have provided wrong status. Available are"
+                                                              f" ***on/off*** while yours was {status}",
+                                                destination=ctx.channel)
+
+    @stats.command()
+    async def h12(self, ctx, chn: TextChannel, status: str):
+        """
+        every 12h setup
+        """
+        status = status.lower()
+        if status and status in ["on", "off"]:
+            status_code = self.get_status_number(status=status)
+            await self.stats_notifications_manager(ctx=ctx, setting_name="delegate_12h", chn=chn,
+                                                   status_code=status_code, status=status, frame=f'12H')
         else:
             await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Wrong Status",
                                                 error_details=f"You have provided wrong status. Available are"
