@@ -20,6 +20,9 @@ class HelpCommands(commands.Cog):
              "value": f"```{self.command_string}voter```"},
             {"name": ":toolbox: Commands for server owner",
              "value": f"```{self.command_string}sys```"},
+            {"name": ":toolbox: Commands to query DPOPS network",
+             "value": f"```{self.command_string}dpops```"},
+
         ]
         await customMessages.embed_builder(ctx=ctx, c=Colour.green(), title=title, description=description,
                                            list_of_commands=list_of_commands)
