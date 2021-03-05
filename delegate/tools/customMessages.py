@@ -53,7 +53,7 @@ async def delegate_stats(destination, data: dict, thumbnail):
     data_embed.add_field(name=f':cowboy: Total Voters',
                          value=f'```{data["total_voters"]}```')
     data_embed.add_field(name=f':ballot_box: Total Votes',
-                         value=f'```{int(float(data["total_votes"]) / (10 ** 7)):,} XCASH```')
+                         value=f'```{int(float(data["total_votes"]) / (10 ** 6)):,} XCASH```')
     data_embed.add_field(name=f':pick: Total XCASH',
                          value=f'```{int(float(data["total_xcash_from_blocks_found"]) / (10 ** 6)):,} XCASH```')
     data_embed.add_field(name=f':incoming_envelope: Total Payments',
@@ -118,8 +118,8 @@ async def state_info(ctx, data: dict, xcash_price_usdt: dict):
                         value=f':coin: `{current_pending:,} XCASH` \n:flag_us: `${usd_final}`')
 
     state_nfo.add_field(name=':moneybag: Total Payed ',
-                        value=f':coin: `{round(int(data["total"]) / (10 ** 7), 6)}XCASH`\n'
-                              f':flag_us: `${total_usd_payed_final}`')
+                        value=f':coin: `{round(int(data["total"]) / (10 ** 6), 6):,}XCASH`\n'
+                              f':flag_us: `${total_usd_payed_final:,}`')
 
     await ctx.author.send(embed=state_nfo)
 
