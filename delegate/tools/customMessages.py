@@ -108,7 +108,7 @@ async def state_info(ctx, data: dict, xcash_price_usdt: dict):
             micro = current_pending
             penny = xcash_price_usdt["USD"]
             usd_final = round((micro * penny), 4)
-            total_payed = int(data["total"]) / (10 ** 7)
+            total_payed = int(data["total"]) / (10 ** 6)
             total_usd_payed_final = round(total_payed * penny, 4)
         except ZeroDivisionError:
             usd_final = 0.00
