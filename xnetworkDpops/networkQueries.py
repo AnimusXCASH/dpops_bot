@@ -67,7 +67,7 @@ class NetworkCommands(commands.Cog):
             description = f"All available commands to query the DPOPS network"
             list_of_commands = [
                 {"name": "Check various rankings",
-                 "value": f"```{self.command_string}ranks```"},
+                 "value": f"```{self.command_string}dpops ranks```"},
             ]
             await embed_builder(ctx=ctx, c=Color.green(), title=title, description=description,
                                 list_of_commands=list_of_commands)
