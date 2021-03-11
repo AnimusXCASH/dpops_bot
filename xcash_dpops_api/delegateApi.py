@@ -2,8 +2,9 @@ import requests
 
 
 class DelegateApiAccess:
-    def __init__(self, dpops_api):
+    def __init__(self, dpops_api, delegate_addr):
         self.api = dpops_api
+        self.delegate_addr = delegate_addr
         self.statistics = '/shareddelegateswebsitegetstatistics'
         self.blocks_found = '/getblocksfound'
         self.public_address_info = '/getpublicaddressinformation'
@@ -49,3 +50,14 @@ class DelegateApiAccess:
         """
         endpoint = self.public_address_payment_info + f"?public_address={public_address}"
         return self.__process_request(api_link=endpoint)
+
+    def get_voters(self):
+        delegate_api = self.api+self.get_voters_list + f"?parameter1={self.delegate_addr}"
+        try:
+            response = requests.get(delegate_api)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return {"error": f"Could not get response from server"}
+        except ConnectionError:
+            return {"error": f'{delegate_api} can not be reached'}
