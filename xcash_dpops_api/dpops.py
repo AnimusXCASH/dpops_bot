@@ -9,9 +9,9 @@ class Dpops:
     Wrapper for various APIs related to delegates and xcash
     """
 
-    def __init__(self, dpops_api, delegate_name: str):
+    def __init__(self, dpops_api, delegate_name: str, delegate_addr:str):
         self.foundation = "http://delegates.xcash.foundation/"
-        self.delegate_api = DelegateApiAccess(dpops_api=dpops_api)
+        self.delegate_api = DelegateApiAccess(dpops_api=dpops_api, delegate_addr = delegate_addr)
         self.delegates = DpopsDelegates()
         self.xcash_explorer = XcashExplorer()
         self.calculator = DpopsCalculator(delegate_name=delegate_name)

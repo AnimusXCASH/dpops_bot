@@ -128,6 +128,51 @@ class NetworkCommands(commands.Cog):
             details = "Filter can be ***solo***, ***shared*** or ***Empty*** "
             await system_message(ctx=ctx, c=Color.red(), title=f'Wrong Filter', error_details=details)
 
+    @ranks.command()
+    async def delegate(self, ctx):
+        from pprint import pprint
+        delegate_name = self.bot.bot_settings["delegateName"]
+        data = self.delegates.get_delegates()
+
+        print("getting vote ranks")
+        vote_ranks = "total_vote_count"
+        new_list = [{"delegate_name": x["delegate_name"], f"{vote_ranks}": int(x[vote_ranks])} for x in data if
+                    int(x[vote_ranks]) > 0 and x["online_status"] != 'false']
+        s_vote_ranks = sorted(new_list, key=lambda d: d[vote_ranks], reverse=True)
+
+        location_votes = 0
+        delegate_ranks = dict()
+        for d in s_vote_ranks:
+            location_votes += 1
+            if d["delegate_name"] == delegate_name:
+                delegate_ranks["votes"] = location_votes
+
+        print("Getting block producer ranks")
+        block_ranks = "block_producer_total_rounds"
+        new_list = [{"delegate_name": x["delegate_name"], f"{block_ranks}": int(x[block_ranks])} for x in data if
+                    int(x[block_ranks]) > 0 and x["online_status"] != 'false']
+        s_block_ranks = sorted(new_list, key=lambda d: d[block_ranks], reverse=True)
+
+        location_blocks = 0
+        for d in s_block_ranks:
+            location_blocks += 1
+            if d["delegate_name"] == delegate_name:
+                delegate_ranks["blocks"] = location_blocks
+
+        print("Getting block verifier ranks")
+        verifier_ranks = "block_verifier_total_rounds"
+        new_list = [{"delegate_name": x["delegate_name"], f"{verifier_ranks}": int(x[verifier_ranks])} for x in data if
+                    int(x[verifier_ranks]) > 0 and x["online_status"] != 'false']
+        s_verifier_ranks = sorted(new_list, key=lambda d: d[verifier_ranks], reverse=True)
+
+        location_verifier = 0
+        for d in s_verifier_ranks:
+            location_verifier += 1
+            if d["delegate_name"] == delegate_name:
+                delegate_ranks["verifier"] = location_verifier
+
+        pprint(delegate_ranks)
+
 
 def setup(bot):
     bot.add_cog(NetworkCommands(bot))

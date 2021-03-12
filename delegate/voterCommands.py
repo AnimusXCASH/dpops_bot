@@ -12,6 +12,7 @@ class VoterCommands(commands.Cog):
         self.bot = bot
         self.command_string = self.bot.get_command_str()
         self.delegate_api_access = self.bot.dpops_queries.delegate_api
+        self.calculator = self.bot.dpops_queries.calculator
 
     @staticmethod
     def get_status_number(status: str):
@@ -37,6 +38,8 @@ class VoterCommands(commands.Cog):
                                         f"`Aliases: nfo, i`"},
                               {"name": ":mega: Apply for available automatic notifications",
                                "value": f"```{self.command_string}voter notify```"},
+                              {"name": ":mega: Check ROI based on vote size",
+                               "value": f"```{self.command_string}voter rate```"},
                               {"name": ":warning: Important :warning: ",
                                "value": f"`If you have registered yourself into Discord system than ***public address***"
                                         f" is not needed when executing commands above. Your public key will be "
@@ -273,6 +276,49 @@ class VoterCommands(commands.Cog):
             details = f"Record of your profile could not be found in the database. Please register " \
                       f"first or than provide public key when executing command"
             await sys_message(ctx=ctx, details=details, c=Colour.red())
+
+    @voter.command()
+    async def rate(self,ctx):
+        if self.bot.voters_manager.check_voter(user_id=int(ctx.author.id)):
+            profile = self.bot.voters_manager.get_voter(user_id=int(ctx.author.id))
+            voters_list = self.delegate_api_access.get_voters()
+            registered = [x for x in voters_list if
+                          x["public_address_created_reserve_proof"].upper() == profile["publicKey"].upper()]
+
+            if registered:
+                vote_size = registered[0]["total"]
+                conversion_xcash = int(int(vote_size) / (10 ** 6))
+                in_millions = int(conversion_xcash / (10 ** 6))
+
+                data_30_day_fix = self.calculator.thirty_day_roi()
+                data_14_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=15)
+                data_21_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=30)
+                data_60_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=60)
+                data_190_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=190)
+                data_365_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=365)
+
+                slip = Embed(title="Estimation of returns",
+                             description=f'Bellow is an estimation of returns for the delegate  '
+                                         f' according to your registered data in the system')
+
+                slip.add_field(name='Current Vote Count',
+                               value=f'```{in_millions:,} Mil ({conversion_xcash:,}) XCASH ```')
+                slip.add_field(name='ROI Minimum Stake Rate',
+                               value=f'```'
+                                     f'30 days\n'
+                                     f'{data_30_day_fix["roi"]["xcash"]} XCASH ({data_30_day_fix["roi"]["pct"]} %)```',
+                               inline=False)
+                slip.add_field(name='ROI Based on Current Vote Count',
+                               value=f'```'
+                                     f'14D = {data_14_day_10_mil["roi"]["xcash"]:,} XCASH ({data_14_day_10_mil["roi"]["pct"]} %)\n'
+                                     f'21D = {data_21_day_10_mil["roi"]["xcash"]:,} XCASH ({data_21_day_10_mil["roi"]["pct"]} %)\n'
+                                     f'60D = {data_60_day_10_mil["roi"]["xcash"]:,} XCASH ({data_60_day_10_mil["roi"]["pct"]} %)\n'
+                                     f'190D = {data_190_day_10_mil["roi"]["xcash"]:,} XCASH ({data_190_day_10_mil["roi"]["pct"]} %)\n'
+                                     f'1Y = {data_365_day_10_mil["roi"]["xcash"]:,} XCASH ({data_365_day_10_mil["roi"]["pct"]} %)\n'
+                                     f'```',
+                               inline=False)
+
+                await ctx.author.send(embed=slip)
 
 
 def setup(bot):
