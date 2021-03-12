@@ -291,8 +291,8 @@ class VoterCommands(commands.Cog):
                 in_millions = int(conversion_xcash / (10 ** 6))
 
                 data_30_day_fix = self.calculator.thirty_day_roi()
-                data_14_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=14)
-                data_21_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=21)
+                data_14_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=15)
+                data_21_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=30)
                 data_60_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=60)
                 data_190_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=190)
                 data_365_day_10_mil = self.calculator.custom_day_custom_amount_roi(amount=in_millions, days=365)
