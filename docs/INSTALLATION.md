@@ -145,7 +145,8 @@ with content:
   "command": "COMMAND CHARACTER",
   "token": "BOT TOKEN OBTAINED IN STEP 2.4.1 ",
   "dpopsApi": "dpops api link from dpops web page" ,
-  "delegateName":"Exact name (case sensitive) of delegate"
+  "delegateName":"Exact name (case sensitive) of delegate",
+  "delegatePublicKey": "Your delegate voting address"
 }
 
 Example:
@@ -154,6 +155,7 @@ Example:
   "token": "cdscdscds.YAJ5uw.dockasmsdcasdcdascdasca",   // Bot token 
   "dpopsApi": "http://xpayment.x-network.eu",
   'delegateName':"X-Payment-World"  // Exact name as written on DPOPS web page
+  "delegatePublicKey": "XCA1kLpg7A9c919tsQZBDYPHoLSZgCzihZPgP569CtFpJvAvQrpqW72HZzLKHRRLpSQzpdKBwJeTaUXGco7E4tHr9TynMN5yfi"
 }
 ```
 
