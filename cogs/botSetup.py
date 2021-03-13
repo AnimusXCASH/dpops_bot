@@ -1,25 +1,13 @@
 from discord.ext import commands
 from cogs.utils import customMessages
-from discord import Colour, TextChannel, Embed
+from discord import Colour, TextChannel
 from cogs.utils.customChecks import is_owner, is_public
-from datetime import datetime
+
+
 class BotSetup(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.command_string = self.bot.get_command_str()
-        self.dpops_wrapper = self.bot.dpops_queries
-
-    async def block_info(self, block:dict, destination):
-        xcash_block_size = float(block['block_reward']) / (10 ** 6)
-        new_block = Embed(title=f':bricks: New block',
-                          description=f'Height @ ***{int(block["block_height"]):,}***',
-                          colour=Colour.green())
-        new_block.add_field(name=f":date: Time",
-                            value=f"```{datetime.fromtimestamp(int(block['block_date_and_time']))}```")
-        new_block.add_field(name=f":moneybag: Block Value",
-                            value=f":coin: `{xcash_block_size:,} XCASH`",
-                            inline=False)
-        await destination.send(embed=destination)
 
     @commands.command()
     @commands.check(is_public)
@@ -52,35 +40,13 @@ class BotSetup(commands.Cog):
                  "value": f"```{self.command_string}blocks height <block height INT>```"},
                 {"name": ":three: Set Starting height",
                  "value": f"```{self.command_string}blocks monitor <on/off>```"},
-                {"name": ":bricks: Purge blocks from chain",
-                 "value": f"```{self.command_string}blocks purge <block_height>```"},
                 {"name": ":warning: Warning ",
                  "value": f"Be sure that the bot has required permissions to view and write to the channel, "
-                          f"where stats will be sent."}
+                          f"where stats will be sent. "}
 
             ]
             await customMessages.embed_builder(ctx=ctx, c=Colour.green(), title=title, description=description,
                                                list_of_commands=list_of_commands)
-
-    @blocks.command()
-    async def purge(self, ctx, block_height:int = None):
-        from pprint import pprint
-        # check delegate blocks
-        response = self.dpops_wrapper.delegate_api.get_last_block_found()
-        current = self.bot.setting.get_setting(setting_name='new_block')
-        if current["channel"] > 0:
-            block_channel = self.bot.get_channel(id=int(current["channel"]))
-
-            # if block_height:
-            #     print("filter custom")
-            # else:
-            #     print("Purge all blocks")
-        else:
-            await customMessages.system_message(ctx=ctx, c=Colour.red(), title="System Error",
-                                                error_details="First you need to setup channel for block monitor, "
-                                                              "before blocks can be purged to that channel.",
-                                                destination=ctx.channel)
-
 
     @blocks.command()
     async def height(self, ctx, block_height: int):
