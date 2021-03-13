@@ -172,7 +172,7 @@ class NetworkCommands(commands.Cog):
 
         delegate_rank = Embed(title=f':trophy: {delegate_name}',
                               colour=Color.purple())
-        delegate_rank.set_thumbnail(url=self.bot.author.avatar_url)
+        delegate_rank.set_thumbnail(url=self.bot.user.avatar_url)
         delegate_rank.add_field(name=':ballot_box: Rank by votes',
                                 value=f'{delegate_ranks["votes"]}',
                                 inline=False)
