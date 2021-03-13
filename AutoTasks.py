@@ -291,7 +291,7 @@ class AutomaticTasks:
                         print('backend error')
 
 
-def start_tasks(automatic_tasks):
+def start_tasks(automatic_tasks, snapshot_times):
     """
     Starts all tasks in the backgroudn
     :param automatic_tasks: AutomaticTasks class
