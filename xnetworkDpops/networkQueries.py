@@ -66,8 +66,8 @@ class NetworkCommands(commands.Cog):
             title = ':sos: __Dpops Commands__ :sos: '
             description = f"All available commands to query the DPOPS network"
             list_of_commands = [
-                {"name": "Check various rankings",
-                 "value": f"```{self.command_string}dpops ranks```"},
+                {"name": "Check various ranks from DPOPS",
+                 "value": f"```{self.command_string}dpops ranks```"}
             ]
             await embed_builder(ctx=ctx, c=Color.green(), title=title, description=description,
                                 list_of_commands=list_of_commands)
@@ -78,12 +78,14 @@ class NetworkCommands(commands.Cog):
             title = ':trophy: ranks by category'
             description = f"All available commands to query the DPOPS network"
             list_of_commands = [
-                {"name": "Check various rankings",
+                {"name": "Ranks based on blocks produced",
                  "value": f"```{self.command_string}dpops ranks blocks```"},
-                {"name": "Check various rankings",
+                {"name": "Ranks based on votes",
                  "value": f"```{self.command_string}dpops ranks votes```"},
-                {"name": "Check various rankings",
+                {"name": "Ranks based on verifier",
                  "value": f"```{self.command_string}dpops ranks verifier```"},
+                {"name": "System delegate ranks",
+                 "value": f"```{self.command_string}dpops ranks delegate```"}
             ]
             await embed_builder(ctx=ctx, c=Color.green(), title=title, description=description,
                                 list_of_commands=list_of_commands)
@@ -134,7 +136,6 @@ class NetworkCommands(commands.Cog):
         delegate_name = self.bot.bot_settings["delegateName"]
         data = self.delegates.get_delegates()
 
-        print("getting vote ranks")
         vote_ranks = "total_vote_count"
         new_list = [{"delegate_name": x["delegate_name"], f"{vote_ranks}": int(x[vote_ranks])} for x in data if
                     int(x[vote_ranks]) > 0 and x["online_status"] != 'false']
@@ -147,7 +148,6 @@ class NetworkCommands(commands.Cog):
             if d["delegate_name"] == delegate_name:
                 delegate_ranks["votes"] = location_votes
 
-        print("Getting block producer ranks")
         block_ranks = "block_producer_total_rounds"
         new_list = [{"delegate_name": x["delegate_name"], f"{block_ranks}": int(x[block_ranks])} for x in data if
                     int(x[block_ranks]) > 0 and x["online_status"] != 'false']
@@ -159,7 +159,6 @@ class NetworkCommands(commands.Cog):
             if d["delegate_name"] == delegate_name:
                 delegate_ranks["blocks"] = location_blocks
 
-        print("Getting block verifier ranks")
         verifier_ranks = "block_verifier_total_rounds"
         new_list = [{"delegate_name": x["delegate_name"], f"{verifier_ranks}": int(x[verifier_ranks])} for x in data if
                     int(x[verifier_ranks]) > 0 and x["online_status"] != 'false']
@@ -171,7 +170,19 @@ class NetworkCommands(commands.Cog):
             if d["delegate_name"] == delegate_name:
                 delegate_ranks["verifier"] = location_verifier
 
-        pprint(delegate_ranks)
+        delegate_rank = Embed(title=f':trophy: {delegate_name}',
+                              colour=Color.purple())
+        delegate_rank.set_thumbnail(url=self.bot.author.avatar_url)
+        delegate_rank.add_field(name=':ballot_box: Rank by votes',
+                                value=f'{delegate_ranks["votes"]}',
+                                inline=False)
+        delegate_rank.add_field(name=':judge: Verifier rank',
+                                value=f'{delegate_ranks["verifier"]}',
+                                inline=False)
+        delegate_rank.add_field(name=':bricks: Block produced rank',
+                                value=f'{delegate_ranks["blocks"]}',
+                                inline=False)
+        await ctx.author.send(embed=delegate_rank)
 
 
 def setup(bot):
