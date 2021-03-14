@@ -132,7 +132,7 @@ Required permissions:
 - Invite bot to the community by clicking on link created through previous step
     - All necessary permissions will be set automatically once bot joins
 
-#### 2.5.2. Bot Setup
+#### 2.5.2. Bot Setup 
 
 go to main project folder and create file name:
 ```text
@@ -156,6 +156,58 @@ Example:
   "dpopsApi": "http://xpayment.x-network.eu",
   'delegateName':"X-Payment-World"  // Exact name as written on DPOPS web page
   "delegatePublicKey": "XCA1kLpg7A9c919tsQZBDYPHoLSZgCzihZPgP569CtFpJvAvQrpqW72HZzLKHRRLpSQzpdKBwJeTaUXGco7E4tHr9TynMN5yfi"
+}
+```
+#### 2.5.2. Notification times
+All notifications are based on the system time when bot is deployed in format HH:MM:SS. 
+Create a new file in the main project directory called snapshotTimes.json and copy/paste data bellow for system 
+default settings.
+
+
+```json
+
+{
+  "delHourly": {
+    "second": "00",
+    "minute": "00"
+  },
+  "delThreeHour": {
+    "hour": "00,03,06,09,12,15,18,21",
+    "minute": "00",
+    "second": "02"
+  },
+  "delFourHour":{
+    "hour": "00,04,08,12,16,20",
+    "minute": "00",
+    "second": "02"
+  },
+    "delSixHour":{
+    "hour": "00,06,12,18",
+    "minute": "00",
+    "second": "12"
+  },
+    "delTwelveHour":{
+    "hour": "00,12",
+    "minute": "00",
+    "second": "10"
+  },
+    "delDaily": {
+      "hour": "23",
+      "minute": "59",
+      "second": "59"
+    },
+    "delPaymentChk": {
+      "minute": "05,10,15,20,25,30,35,40,45,50,55",
+      "second": "05"
+    },
+    "paymentDms": {
+      "minute": "05,10,15,20,25,30,35,40,45,50,55",
+      "second": "10"
+    },
+    "delLastBlock": {
+      "minute": "05,10,15,20,25,30,35,40,45,50,55",
+      "second": "15"
+    }
 }
 ```
 
