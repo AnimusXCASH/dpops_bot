@@ -8,6 +8,7 @@ from utils.tools import Helpers
 if __name__ == "__main__":
     helper = Helpers()
     bot_settings = helper.read_json_file(file_name='botSetup.json')
+    snapshot_times = helper.read_json_file(file_name='snapshotTimes.json')
     backend_manager = BackendManager()
     print("Checking required collections")
     backend_manager.integrity_check.check_collections()
@@ -15,6 +16,6 @@ if __name__ == "__main__":
     xcash_manager = XcashManager()
     bot = DiscordBot(dpops_wrapper, xcash_manager, backend_manager)
     auto_tasks = AutomaticTasks(dpops_wrapper, bot)
-    task_starter = start_tasks(automatic_tasks=auto_tasks)
+    task_starter = start_tasks(automatic_tasks=auto_tasks,snapshot_times=snapshot_times)
     bot.run()
     print("Done")
