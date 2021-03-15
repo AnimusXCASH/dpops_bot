@@ -24,8 +24,9 @@ class VoterCommands(commands.Cog):
     @commands.group(aliases=["v"])
     async def voter(self, ctx):
         if ctx.invoked_subcommand is None:
-            title = ':joystick: __Available delegate stats__ :joystick: '
-            description = "All commands dedicated to all voters who have voted for x-payment world delegate." \
+            title = ':joystick: __Available commands as voter__ :joystick: '
+            description = f"All commands dedicated to all voters who have voted for " \
+                          f"***{self.bot.bot_settings['delegateName']}*** delegate." \
                           "you can use ***v*** as a synonym for ***voter***"
             list_of_values = [{"name": ":cowboy: Activate Profile",
                                "value": f"```{self.command_string}voter management```"
@@ -74,7 +75,7 @@ class VoterCommands(commands.Cog):
     async def notify(self, ctx):
         if ctx.invoked_subcommand is None:
             title = 'Automatic notifications system'
-            description = "Bellow are all availabale services which allow you to apply your registered public key " \
+            description = "Bellow are all available services which allow you to apply your registered public key " \
                           "to be monitored for various activities. "
 
             list_of_values = [{"name": ":money_with_wings: Get notifications to DM when delegate sends you payment",
@@ -139,7 +140,8 @@ class VoterCommands(commands.Cog):
                                                               f'registered public key. Notification will be sent to '
                                                               f'your DM as soon as first payment is processed. Please '
                                                               f' allow private messages for the bot. ')
-                            last_sent_payment.set_footer(text='Thank you for voting!')
+                            last_sent_payment.set_footer(
+                                text=f'Thank you for voting for {self.bot.bot_settings["delegateName"]}!')
                             await ctx.author.send(embed=last_sent_payment)
                     else:
                         last_sent_payment = Embed(title=":incoming_envelope: Reward Notifications",
@@ -149,7 +151,8 @@ class VoterCommands(commands.Cog):
                         last_sent_payment.add_field(name=f"Message",
                                                     value=f'You have successfully turned OFF automatic notifications, '
                                                           f'when rewards are distributed to you by the delegate.')
-                        last_sent_payment.set_footer(text='Thank you for voting!')
+                        last_sent_payment.set_footer(
+                            text=f'Thank you for voting for {self.bot.bot_settings["delegateName"]}!')
                         await ctx.author.send(embed=last_sent_payment)
 
                 else:
@@ -208,6 +211,7 @@ class VoterCommands(commands.Cog):
             profile_info.add_field(name=f'Registered public key',
                                    value=f'```{result["publicKey"]}```',
                                    inline=False)
+            profile_info.set_footer(text=f'Thank you for voting for {self.bot.bot_settings["delegateName"]}!')
             await ctx.author.send(embed=profile_info)
         else:
             details = f"Record of your profile could not be found in the database. Please register first."
@@ -235,7 +239,7 @@ class VoterCommands(commands.Cog):
                     last_payments.set_thumbnail(url=self.bot.user.avatar_url)
                     last_payments.add_field(name=f":warning: Message",
                                             value=f'You have not received any payments yet from delegate.')
-                    last_payments.set_footer(text='Thank you for voting!')
+                    last_payments.set_footer(text=f'Thank you for voting for {self.bot.bot_settings["delegateName"]}!')
                     await ctx.author.send(embed=last_payments)
             else:
                 await ctx.author.send(content='Wrong public address structure provided ')
@@ -257,7 +261,7 @@ class VoterCommands(commands.Cog):
             if match(r'^XCA[A-Za-z0-9]{95}$|^XCB[A-Za-z0-9]{107}', public_address) is not None:
                 data = self.delegate_api_access.pub_addr_info(pub_addr=public_address)
                 if not data.get("error"):
-                    await state_info(ctx=ctx, data=data,xcash_price_usdt=self.bot.dpops_queries.xcash_explorer.price())
+                    await state_info(ctx=ctx, data=data, xcash_price_usdt=self.bot.dpops_queries.xcash_explorer.price())
                 else:
                     last_payments = Embed(title=":map: State Information",
                                           colour=Colour.green())
@@ -266,7 +270,7 @@ class VoterCommands(commands.Cog):
                     last_payments.add_field(name=f":warning: Message",
                                             value=f'No information could be obtained currently on public key '
                                                   f' `{public_address}`. Please try again later. ')
-                    last_payments.set_footer(text='Thank you for voting!')
+                    last_payments.set_footer(text=f'Thank you for voting for {self.bot.bot_settings["delegateName"]}!')
                     await ctx.author.send(embed=last_payments)
 
             else:
@@ -278,7 +282,7 @@ class VoterCommands(commands.Cog):
             await sys_message(ctx=ctx, details=details, c=Colour.red())
 
     @voter.command()
-    async def rate(self,ctx):
+    async def rate(self, ctx):
         if self.bot.voters_manager.check_voter(user_id=int(ctx.author.id)):
             profile = self.bot.voters_manager.get_voter(user_id=int(ctx.author.id))
             voters_list = self.delegate_api_access.get_voters()
@@ -317,6 +321,7 @@ class VoterCommands(commands.Cog):
                                      f'1Y = {data_365_day_10_mil["roi"]["xcash"]:,} XCASH ({data_365_day_10_mil["roi"]["pct"]} %)\n'
                                      f'```',
                                inline=False)
+                slip.set_footer(text=f'Thank you for voting for {self.bot.bot_settings["delegateName"]}!')
 
                 await ctx.author.send(embed=slip)
 
