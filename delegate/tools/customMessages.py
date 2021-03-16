@@ -35,13 +35,13 @@ async def embed_builder(ctx, title, description, data: list, destination=None, t
         await ctx.channel.send(embed=embed)
 
 
-async def delegate_stats(destination, data: dict, thumbnail):
+async def delegate_stats(destination, data: dict, thumbnail, delegate_name: str):
     """:param
             {
              'total_xcash_from_blocks_found': '2472432078918'}
      """
     data_embed = Embed(title=f'{data["delegate_name"]} Stats',
-                       description=f"Current statistics about X-Payment-World delegate operating on ***{round(float(data['fee']), 2)}%*** fee"
+                       description=f"Current statistics about {delegate_name} delegate operating on ***{round(float(data['fee']), 2)}%*** fee"
                                    f" and minimum payment amount ***{int(data['minimum_amount']):,}*** XCASH.",
                        colour=Colour.green(),
                        timestamp=datetime.utcnow())

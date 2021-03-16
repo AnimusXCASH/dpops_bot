@@ -24,7 +24,8 @@ class DelegateQueries(commands.Cog):
     @delegate.command(aliases=["s"])
     async def stats(self, ctx):
         stats = self.bot.dpops_queries.delegate_api.get_stats()
-        await delegate_stats(destination=ctx.author, data=stats, thumbnail=self.bot.user.avatar_url)
+        await delegate_stats(destination=ctx.author, data=stats, thumbnail=self.bot.user.avatar_url,
+                             delegate_name=self.bot.bot_settings['delegateName'])
 
 
 def setup(bot):
