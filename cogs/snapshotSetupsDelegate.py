@@ -70,7 +70,7 @@ class DelegateSnapshotCommands(commands.Cog):
         if status and status in ["on", "off"]:
             status_code = self.get_status_number(status=status)
             await self.stats_notifications_manager(ctx=ctx, setting_name="delegate_daily", chn=chn,
-                                                   status_code=status_code, status=status)
+                                                   status_code=status_code, status=status,frame="Daily")
         else:
             await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Wrong Status",
                                                 error_details=f"You have provided wrong status. Available are"
