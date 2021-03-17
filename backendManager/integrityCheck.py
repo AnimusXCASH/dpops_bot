@@ -4,7 +4,8 @@ class IntegrityCheck(object):
         self.dpops_delegate = self.connection["DpopsDelegate"]  #
         self.required_collections = ["votersDb", "botSettings"]
         self.required_documents = ["new_block", "delegate_daily", "delegate_hourly",
-                                   "delegate_4h", "delegate_3h", "delegate_6h", "delegate_12h", 'payment_notifications']
+                                   "delegate_4h", "delegate_3h", "delegate_6h", "delegate_12h", 'payment_notifications',
+                                   "t_del_daily", "t_new_block", "t_return_rate"]
 
     def check_collections(self):
         """
@@ -31,6 +32,6 @@ class IntegrityCheck(object):
                 }
                 status = self.dpops_delegate.botSettings.insert_one(data)
                 if status.inserted_id:
-                    print(f"New documment created successfully: {r}")
+                    print(f"New document created successfully: {r}")
                 else:
                     print(f"ERROR: Document {r} could not be inserted into collection of botSettings")
