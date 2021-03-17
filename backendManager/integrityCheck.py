@@ -5,7 +5,7 @@ class IntegrityCheck(object):
         self.required_collections = ["votersDb", "botSettings"]
         self.required_documents = ["new_block", "delegate_daily", "delegate_hourly",
                                    "delegate_4h", "delegate_3h", "delegate_6h", "delegate_12h", 'payment_notifications',
-                                   "t_del_daily", "t_new_block", "t_return_rate"]
+                                   "t_del_daily", "t_new_block", "t_return_rate","t_call_to_vote"]
 
     def check_collections(self):
         """
