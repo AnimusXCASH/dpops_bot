@@ -2,7 +2,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from xcash_wallet.xcash import XcashManager
 from discord import Colour, Embed
-
+import tweepy
 from datetime import datetime
 
 
@@ -12,6 +12,13 @@ class AutomaticTasks:
         self.dpops_wrapper = dpops_wrapper
         self.bot = bot
         self.command_string = self.bot.get_command_str()
+        self.twitter_credentials = self.bot.bot_settings['twitter']
+        if self.twitter_credentials["status"]:
+            auth = tweepy.OAuthHandler(self.twitter_credentials["apiKey"], self.twitter_credentials["apiSecret"])
+            auth.set_access_token(self.twitter_credentials["accessToken"], self.twitter_credentials["accessSecret"])
+            self.twitter_messages = tweepy.API(auth)
+        else:
+            self.twitter_messages = None
 
     async def tweet_service_status(self, setting_name: str):
         twitter_notifications = self.bot.setting.get_setting(setting_name=setting_name)
