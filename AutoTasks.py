@@ -4,6 +4,7 @@ from xcash_wallet.xcash import XcashManager
 from discord import Colour, Embed
 import tweepy
 from datetime import datetime
+import random
 
 
 class AutomaticTasks:
@@ -20,7 +21,17 @@ class AutomaticTasks:
         else:
             self.twitter_messages = None
 
-    async def tweet_service_status(self, setting_name: str):
+    @staticmethod
+    def produce_hash_tag_list():
+        hashtag_list = ["#dpops", "#weareXCASH", "$xcash", "#xcash", "#xcashians", "#xcashian", "#crypto",
+                        "#cryptocurrency", "#blockchain", "#trading", "#fintech"
+                                                                      "#bitcoin", "#monero", "#xmr"]
+
+        random_hash_string = random.sample(hashtag_list, 3)
+        hash_list = ' '.join(random_hash_string)
+        return hash_list
+
+    def tweet_service_status(self, setting_name: str):
         twitter_notifications = self.bot.setting.get_setting(setting_name=setting_name)
         if twitter_notifications["status"] == 1:
             return True
@@ -98,8 +109,10 @@ class AutomaticTasks:
 
                     await block_channel.send(embed=new_block)
 
-                    await self.tweet(text="We have found new block on height blablabla in value of"
-                                          " xcash (conversion rate) <HASHTAGS>")
+                    if self.twitter_messages and self.tweet_service_status(setting_name="t_new_block"):
+                        await self.tweet(text=f"New block produced @ height {int(last_block_found['block_height']):,} "
+                                              f" in value of {xcash_block_size:,} XCASH (${usd_final})"
+                                              f" {self.produce_hash_tag_list}")
 
                     if self.bot.setting.update_settings_by_dict(setting_name="new_block",
                                                                 value={"value": int(
