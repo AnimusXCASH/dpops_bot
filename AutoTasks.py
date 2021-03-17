@@ -29,10 +29,10 @@ class AutomaticTasks:
 
     async def tweet(self, text):
         try:
+            self.twitter_messages.update_status(text)
+        except Exception as e:
+            print(f'Could not dispatch Twitter message due to {e}')
             pass
-        except Exception:
-            pass
-        pass
 
     async def vote_marketing_tweet(self):
         await self.tweet(text='Vote for delegate: <Vote string>')
