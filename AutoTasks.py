@@ -13,6 +13,23 @@ class AutomaticTasks:
         self.bot = bot
         self.command_string = self.bot.get_command_str()
 
+    async def tweet_service_status(self, setting_name: str):
+        twitter_notifications = self.bot.setting.get_setting(setting_name=setting_name)
+        if twitter_notifications["status"] == 1:
+            return True
+        else:
+            return False
+
+    async def tweet(self, text):
+        try:
+            pass
+        except Exception:
+            pass
+        pass
+
+    async def vote_marketing_tweet(self):
+        await self.tweet(text='Vote for delegate: <Vote string>')
+
     async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict, description: str):
         daily_stats = self.bot.get_channel(id=int(delegate_settings["channel"]))
         delegate_daily = Embed(title=f':bar_chart: {delegate_stats["delegate_name"]} Statistics',
@@ -73,6 +90,10 @@ class AutomaticTasks:
                                         inline=False)
 
                     await block_channel.send(embed=new_block)
+
+                    await self.tweet(text="We have found new block on height blablabla in value of"
+                                          " xcash (conversion rate) <HASHTAGS>")
+
                     if self.bot.setting.update_settings_by_dict(setting_name="new_block",
                                                                 value={"value": int(
                                                                     last_block_found["block_height"])}):
