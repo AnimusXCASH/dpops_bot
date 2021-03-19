@@ -46,7 +46,11 @@ class AutomaticTasks:
             pass
 
     async def vote_marketing_tweet(self):
-        await self.tweet(text='Vote for delegate: <Vote string>')
+        """
+        Send message to twitter with voting initiative
+        """
+        if self.twitter_messages:
+            await self.tweet(text='Vote for delegate: <Vote string>')
 
     async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict, description: str):
         daily_stats = self.bot.get_channel(id=int(delegate_settings["channel"]))
