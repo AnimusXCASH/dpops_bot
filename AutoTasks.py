@@ -48,7 +48,7 @@ class AutomaticTasks:
         """
         Send message to twitter with voting initiative
         """
-        if self.twitter_messages:
+        if self.twitter_messages and self.tweet_service_status(setting_name="t_call_to_vote"):
             await self.tweet(
                 text=f'Vote for delegate with --> {self.bot.bot_settings["voteString"]} {self.produce_hash_tag_list()}')
 
