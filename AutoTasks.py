@@ -115,8 +115,8 @@ class AutomaticTasks:
 
                     if self.twitter_messages and self.tweet_service_status(setting_name="t_new_block"):
                         self.tweet(text=f"New block produced @ height {int(last_block_found['block_height']):,} "
-                                              f" in value of {xcash_block_size:,} XCASH (${usd_final})"
-                                              f" {self.produce_hash_tag_list}")
+                                        f" in value of {xcash_block_size:,} XCASH (${usd_final})"
+                                        f" {self.produce_hash_tag_list()}")
 
                     if self.bot.setting.update_settings_by_dict(setting_name="new_block",
                                                                 value={"value": int(
@@ -152,9 +152,8 @@ class AutomaticTasks:
                                     f"Rank: {delegate_stats['current_delegate_rank']}\n"
                                     f"Blocks Found: {delegate_stats['total_blocks_found']}\n"
                                     f"Produced: {in_millions} Mil XCASH\n"
-                                    f"Total Voters: {delegate_stats['total_voters']}")
-
-
+                                    f"Total Voters: {delegate_stats['total_voters']}\n"
+                                    f"{self.produce_hash_tag_list()}")
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
