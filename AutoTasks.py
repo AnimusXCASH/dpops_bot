@@ -48,7 +48,9 @@ class AutomaticTasks:
         """
         Send message to twitter with voting initiative
         """
+        print("Vote marketing")
         if self.twitter_messages and self.tweet_service_status(setting_name="t_call_to_vote"):
+            print("Sending tweet")
             self.tweet(
                 text=f'Vote for delegate with --> {self.bot.bot_settings["voteString"]} {self.produce_hash_tag_list()}')
 
@@ -139,16 +141,17 @@ class AutomaticTasks:
         if daily_settings["status"] == 1:
             delegate_stats = self.dpops_wrapper.delegate_api.get_stats()
             if not delegate_stats.get("error"):
-                if daily_settings["status"] == 1:
-                    await self.delegate_overall_message(delegate_settings=daily_settings, delegate_stats=delegate_stats,
-                                                        description='Daily Delegate Snapshot')
+
+                await self.delegate_overall_message(delegate_settings=daily_settings, delegate_stats=delegate_stats,
+                                                    description='Daily Delegate Snapshot')
 
                 # Twitter message for daily
                 if self.twitter_messages and self.tweet_service_status(setting_name="t_del_daily"):
+                    print("sending daily stats to twitter")
                     conversion_xcash = int(int(delegate_stats['total_xcash_from_blocks_found']) / (10 ** 6))
                     in_millions = int(conversion_xcash / (10 ** 6))
 
-                    self.tweet(text=f"24h Stats {self.bot.bot_settings['delegateName']}\n "
+                    self.tweet(text=f"24h Stats {self.bot.bot_settings['delegateName']}\n"
                                     f"Rank: {delegate_stats['current_delegate_rank']}\n"
                                     f"Blocks Found: {delegate_stats['total_blocks_found']}\n"
                                     f"Produced: {in_millions} Mil XCASH\n"
@@ -357,7 +360,7 @@ def start_tasks(automatic_tasks, snapshot_times):
     scheduler = AsyncIOScheduler()
     print('Started Chron Monitors')
     scheduler.add_job(automatic_tasks.vote_marketing_tweet,
-                      CronTrigger(hour='12', minute='55'), misfire_grace_time=2,
+                      CronTrigger(hour=12,minute='01'), misfire_grace_time=2,
                       max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
                       CronTrigger(minute=snapshot_times["delHourly"]["minute"],
