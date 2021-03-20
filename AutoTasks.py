@@ -24,8 +24,7 @@ class AutomaticTasks:
     @staticmethod
     def produce_hash_tag_list():
         hashtag_list = ["#dpops", "#weareXCASH", "$xcash", "#xcash", "#xcashians", "#xcashian", "#crypto",
-                        "#cryptocurrency", "#blockchain", "#trading", "#fintech"
-                                                                      "#bitcoin", "#monero", "#xmr"]
+                        "#cryptocurrency", "#blockchain", "#trading", "#fintech", "#bitcoin", "#monero", "#xmr"]
 
         random_hash_string = random.sample(hashtag_list, 3)
         hash_list = ' '.join(random_hash_string)
@@ -50,7 +49,8 @@ class AutomaticTasks:
         Send message to twitter with voting initiative
         """
         if self.twitter_messages:
-            await self.tweet(text='Vote for delegate: <Vote string>')
+            await self.tweet(
+                text=f'Vote for delegate with --> {self.bot.bot_settings["voteString"]} {self.produce_hash_tag_list()}')
 
     async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict, description: str):
         daily_stats = self.bot.get_channel(id=int(delegate_settings["channel"]))
@@ -344,6 +344,9 @@ def start_tasks(automatic_tasks, snapshot_times):
     """
     scheduler = AsyncIOScheduler()
     print('Started Chron Monitors')
+    scheduler.add_job(automatic_tasks.vote_marketing_tweet,
+                      CronTrigger(hour='12', minute='55'), misfire_grace_time=2,
+                      max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
                       CronTrigger(minute=snapshot_times["delHourly"]["minute"],
                                   second=snapshot_times["delHourly"]["second"]), misfire_grace_time=2,
