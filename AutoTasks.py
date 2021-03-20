@@ -14,12 +14,24 @@ class AutomaticTasks:
         self.bot = bot
         self.command_string = self.bot.get_command_str()
         self.twitter_credentials = self.bot.bot_settings['twitter']
+
         if self.twitter_credentials["status"]:
             auth = tweepy.OAuthHandler(self.twitter_credentials["apiKey"], self.twitter_credentials["apiSecret"])
             auth.set_access_token(self.twitter_credentials["accessToken"], self.twitter_credentials["accessSecret"])
             self.twitter_messages = tweepy.API(auth)
         else:
             self.twitter_messages = None
+
+    @staticmethod
+    def get_random_link():
+        xnetwork_link = ["https://twitter.com/XCashCrypto",
+                         "https://twitter.com/XCashCommunity",
+                         "https://www.xcash.foundation/",
+                         "https://discord.gg/SdgcrKJx6R"]
+
+        random_hash_string = random.sample(xnetwork_link, 6)
+        hash_list = ' '.join(random_hash_string)
+        return hash_list
 
     @staticmethod
     def produce_hash_tag_list():
@@ -151,12 +163,13 @@ class AutomaticTasks:
                     conversion_xcash = int(int(delegate_stats['total_xcash_from_blocks_found']) / (10 ** 6))
                     in_millions = int(conversion_xcash / (10 ** 6))
 
-                    self.tweet(text=f"24h Stats {self.bot.bot_settings['delegateName']}\n"
+                    self.tweet(text=f"Current stats of {self.bot.bot_settings['delegateName']}\n"
                                     f"Rank: {delegate_stats['current_delegate_rank']}\n"
                                     f"Blocks Found: {delegate_stats['total_blocks_found']}\n"
                                     f"Produced: {in_millions} Mil XCASH\n"
                                     f"Total Voters: {delegate_stats['total_voters']}\n"
-                                    f"{self.produce_hash_tag_list()}")
+                                    f"{self.produce_hash_tag_list()}\n"
+                                    f"More info on: {self.bot.bot_settings['dpopsApi']}")
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
