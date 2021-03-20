@@ -37,7 +37,7 @@ class AutomaticTasks:
         else:
             return False
 
-    async def tweet(self, text):
+    def tweet(self, text):
         try:
             self.twitter_messages.update_status(text)
         except Exception as e:
@@ -49,7 +49,7 @@ class AutomaticTasks:
         Send message to twitter with voting initiative
         """
         if self.twitter_messages and self.tweet_service_status(setting_name="t_call_to_vote"):
-            await self.tweet(
+            self.tweet(
                 text=f'Vote for delegate with --> {self.bot.bot_settings["voteString"]} {self.produce_hash_tag_list()}')
 
     async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict, description: str):
@@ -114,7 +114,7 @@ class AutomaticTasks:
                     await block_channel.send(embed=new_block)
 
                     if self.twitter_messages and self.tweet_service_status(setting_name="t_new_block"):
-                        await self.tweet(text=f"New block produced @ height {int(last_block_found['block_height']):,} "
+                        self.tweet(text=f"New block produced @ height {int(last_block_found['block_height']):,} "
                                               f" in value of {xcash_block_size:,} XCASH (${usd_final})"
                                               f" {self.produce_hash_tag_list}")
 
@@ -142,6 +142,19 @@ class AutomaticTasks:
                 if daily_settings["status"] == 1:
                     await self.delegate_overall_message(delegate_settings=daily_settings, delegate_stats=delegate_stats,
                                                         description='Daily Delegate Snapshot')
+
+                # Twitter message for daily
+                if self.twitter_messages and self.tweet_service_status(setting_name="t_del_daily"):
+                    conversion_xcash = int(int(delegate_stats['total_xcash_from_blocks_found']) / (10 ** 6))
+                    in_millions = int(conversion_xcash / (10 ** 6))
+
+                    self.tweet(text=f"24h Stats {self.bot.bot_settings['delegateName']}\n "
+                                    f"Rank: {delegate_stats['current_delegate_rank']}\n"
+                                    f"Blocks Found: {delegate_stats['total_blocks_found']}\n"
+                                    f"Produced: {in_millions} Mil XCASH\n"
+                                    f"Total Voters: {delegate_stats['total_voters']}")
+
+
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
