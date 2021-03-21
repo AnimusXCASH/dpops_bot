@@ -73,7 +73,8 @@ class AutomaticTasks:
         if self.twitter_messages and self.tweet_service_status(setting_name="t_call_to_vote"):
             print("Sending tweet")
             self.tweet(
-                text=f'Vote for delegate with --> {self.bot.bot_settings["voteString"]} {self.produce_hash_tag_list()}')
+                text=f'Vote for delegate with --> {self.bot.bot_settings["voteString"]} '
+                     f'{self.produce_hash_tag_list(hash_tag_count=6)}')
 
     async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict, description: str):
         daily_stats = self.bot.get_channel(id=int(delegate_settings["channel"]))
