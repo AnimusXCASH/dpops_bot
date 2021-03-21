@@ -23,11 +23,19 @@ class AutomaticTasks:
             self.twitter_messages = None
 
     @staticmethod
-    def get_random_link():
-        xnetwork_link = ["https://twitter.com/XCashCrypto",
-                         "https://twitter.com/XCashCommunity",
-                         "https://www.xcash.foundation/",
-                         "https://discord.gg/SdgcrKJx6R"]
+    def get_random_link(request_text:bool=None):
+
+        if request_text:
+            xnetwork_link = ["Stay up to date by following us on @XCashCrypto",
+                             "Follow community updates through @XCashCommunity",
+                             "Would you like to explore what is $XCASH? Head to https://www.xcash.foundation/ "
+                             "in order to find out!",
+                             "Join #XcashCommunity over #Discord https://discord.gg/SdgcrKJx6R"]
+        else:
+            xnetwork_link = ["https://twitter.com/XCashCrypto",
+                             "https://twitter.com/XCashCommunity",
+                             "https://www.xcash.foundation/",
+                             "https://discord.gg/SdgcrKJx6R"]
 
         random_hash_string = random.sample(xnetwork_link, 6)
         hash_list = ' '.join(random_hash_string)
@@ -104,7 +112,6 @@ class AutomaticTasks:
                 last_produced_block = int(last_block_found["block_height"])
                 if last_produced_block > last_checked_block:
                     print("we have new block")
-                    # Get the price of xcash on market
                     xcash_value = self.bot.dpops_queries.xcash_explorer.price()
                     if xcash_value.get("USD"):
                         xcash_usd = xcash_value["USD"]
@@ -128,9 +135,9 @@ class AutomaticTasks:
                     await block_channel.send(embed=new_block)
 
                     if self.twitter_messages and self.tweet_service_status(setting_name="t_new_block"):
-                        self.tweet(text=f"New block produced @ height {int(last_block_found['block_height']):,} "
+                        self.tweet(text=f"I have forged New block @ height {int(last_block_found['block_height']):,} "
                                         f" in value of {xcash_block_size:,} XCASH (${usd_final})"
-                                        f" {self.produce_hash_tag_list()}")
+                                        f" {self.produce_hash_tag_list(hash_tag_count=5)}")
 
                     if self.bot.setting.update_settings_by_dict(setting_name="new_block",
                                                                 value={"value": int(
@@ -168,7 +175,7 @@ class AutomaticTasks:
                                     f"Blocks Found: {delegate_stats['total_blocks_found']}\n"
                                     f"Produced: {in_millions} Mil XCASH\n"
                                     f"Total Voters: {delegate_stats['total_voters']}\n"
-                                    f"{self.produce_hash_tag_list()}\n"
+                                    f"{self.produce_hash_tag_list(hash_tag_count=3)}\n"
                                     f"More info on: {self.bot.bot_settings['dpopsApi']}")
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
@@ -373,7 +380,7 @@ def start_tasks(automatic_tasks, snapshot_times):
     scheduler = AsyncIOScheduler()
     print('Started Chron Monitors')
     scheduler.add_job(automatic_tasks.vote_marketing_tweet,
-                      CronTrigger(hour=12,minute='01'), misfire_grace_time=2,
+                      CronTrigger(hour=12, minute='01'), misfire_grace_time=2,
                       max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
                       CronTrigger(minute=snapshot_times["delHourly"]["minute"],
