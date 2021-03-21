@@ -35,7 +35,6 @@ $ sudo apt install -y python3-pip
 $ pip3 --version
 ```
 
-
 ### 2.3. Install package requirements for project:
 
 - Install build tools  
@@ -132,6 +131,11 @@ Required permissions:
 - Invite bot to the community by clicking on link created through previous step
     - All necessary permissions will be set automatically once bot joins
 
+### 2.6. Twitter  integration (optional)
+Register Twitter profile on https://twitter.com/ and create [developer account through](https://developer.twitter.com/en)
+
+Once if developer interface, create new application and obtain: api key, api secret, access token and access seccret. 
+
 #### 2.5.2. Bot Setup 
 
 go to main project folder and create file name:
@@ -139,14 +143,27 @@ go to main project folder and create file name:
 botSetup.json
 ```
 
+By default, Twitter notifications are deactivated. If you would like to activate them please chanhe the status to true
+and provide all required details obtained through step 
+you 
+
 with content:
 ```json
 {
-  "command": "COMMAND CHARACTER",
-  "token": "BOT TOKEN OBTAINED IN STEP 2.4.1 ",
-  "dpopsApi": "dpops api link from dpops web page" ,
-  "delegateName":"Exact name (case sensitive) of delegate",
-  "delegatePublicKey": "Your delegate voting address"
+  "command": "BOT COMMAND",
+  "token": "DISCORD BOT TOKEN",
+  "dpopsApi": "http://DPOPSAPI.LINK",
+  "delegateName": "DELEGATE NAME",
+  "voteString": "EXACT VOTE STRING BY NAME NOT PUBLIC ADD FOR DELEGATE ",
+  "discordInvite": "DISCORD INVITE TO YOUR SERVER TO BE SENT TO TWITTER RANDOMLY",
+  "delegatePublicKey": "PUBLIC KEY OF DELEGATE",
+  "twitter": {
+    "status": false,  
+    "apiKey": "DEV ACC API KEY",
+    "apiSecret": "DEV ACCC API SECRET",
+    "accessToken": "DEV ACC PROJECT TOKEN",
+    "accessSecret": "DEV ACC PROJECT SECRET"
+  }
 }
 
 Example:
@@ -155,7 +172,16 @@ Example:
   "token": "cdscdscds.YAJ5uw.dockasmsdcasdcdascdasca",   // Bot token 
   "dpopsApi": "http://xpayment.x-network.eu",
   'delegateName':"X-Payment-World"  // Exact name as written on DPOPS web page
-  "delegatePublicKey": "XCA1kLpg7A9c919tsQZBDYPHoLSZgCzihZPgP569CtFpJvAvQrpqW72HZzLKHRRLpSQzpdKBwJeTaUXGco7E4tHr9TynMN5yfi"
+  "delegatePublicKey": "XCA1kLpg7A9c919tsQZBDYPHoLSZgCzihZPgP569CtFpJvAvQrpqW72HZzLKHRRLpSQzpdKBwJeTaUXGco7E4tHr9TynMN5yfi",
+  "voteString": "vote X-Payment-World",
+  "discordInvite": "https://discord.gg/qwuMhE68PG",
+  "twitter": {
+    "status": false,  
+    "apiKey": "DEV ACC API KEY",
+    "apiSecret": "DEV ACCC API SECRET",
+    "accessToken": "DEV ACC PROJECT TOKEN",
+    "accessSecret": "DEC ACC PROJECT SECRET"
+  }
 }
 ```
 #### 2.5.2. Notification times

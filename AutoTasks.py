@@ -2,8 +2,9 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from xcash_wallet.xcash import XcashManager
 from discord import Colour, Embed
-
+import tweepy
 from datetime import datetime
+import random
 
 
 class AutomaticTasks:
@@ -12,6 +13,67 @@ class AutomaticTasks:
         self.dpops_wrapper = dpops_wrapper
         self.bot = bot
         self.command_string = self.bot.get_command_str()
+        self.twitter_credentials = self.bot.bot_settings['twitter']
+
+        if self.twitter_credentials["status"]:
+            auth = tweepy.OAuthHandler(self.twitter_credentials["apiKey"], self.twitter_credentials["apiSecret"])
+            auth.set_access_token(self.twitter_credentials["accessToken"], self.twitter_credentials["accessSecret"])
+            self.twitter_messages = tweepy.API(auth)
+        else:
+            self.twitter_messages = None
+
+    @staticmethod
+    def get_random_link(request_text: bool = None):
+
+        if request_text:
+            xnetwork_link = ["Stay up to date by following us on @XCashCrypto",
+                             "Follow community updates through @XCashCommunity",
+                             "Would you like to explore what is $XCASH? Head to https://www.xcash.foundation/ "
+                             "in order to find out!",
+                             "Join #XcashCommunity over #Discord https://discord.gg/SdgcrKJx6R"]
+        else:
+            xnetwork_link = ["https://twitter.com/XCashCrypto",
+                             "https://twitter.com/XCashCommunity",
+                             "https://www.xcash.foundation/",
+                             "https://discord.gg/SdgcrKJx6R"]
+
+        random_hash_string = random.sample(xnetwork_link, 6)
+        hash_list = ' '.join(random_hash_string)
+        return hash_list
+
+    @staticmethod
+    def produce_hash_tag_list(hash_tag_count):
+        hashtag_list = ["#dpops", "#weareXCASH", "$xcash", "#xcash", "#xcashians", "#xcashian", "#crypto",
+                        "#cryptocurrency", "#blockchain", "#trading", "#fintech", "#bitcoin", "#monero", "#xmr",
+                        "XCASH", "DPOPS", "#ethereum", "$ETH", "#wearexcash", "xcashians"]
+
+        random_hash_string = random.sample(hashtag_list, hash_tag_count)
+        hash_list = ' '.join(random_hash_string)
+        return hash_list
+
+    def tweet_service_status(self, setting_name: str):
+        twitter_notifications = self.bot.setting.get_setting(setting_name=setting_name)
+        if twitter_notifications["status"] == 1:
+            return True
+        else:
+            return False
+
+    def tweet(self, text):
+        try:
+            self.twitter_messages.update_status(text)
+        except Exception as e:
+            print(f'Could not dispatch Twitter message due to {e}')
+            pass
+
+    async def vote_marketing_tweet(self):
+        """
+        Send message to twitter with voting initiative
+        """
+        print("Vote marketing")
+        if self.twitter_messages and self.tweet_service_status(setting_name="t_call_to_vote"):
+            print("Sending tweet")
+            self.tweet(
+                text=f'Vote for delegate with --> {self.bot.bot_settings["voteString"]} {self.produce_hash_tag_list()}')
 
     async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict, description: str):
         daily_stats = self.bot.get_channel(id=int(delegate_settings["channel"]))
@@ -51,7 +113,6 @@ class AutomaticTasks:
                 last_produced_block = int(last_block_found["block_height"])
                 if last_produced_block > last_checked_block:
                     print("we have new block")
-                    # Get the price of xcash on market
                     xcash_value = self.bot.dpops_queries.xcash_explorer.price()
                     if xcash_value.get("USD"):
                         xcash_usd = xcash_value["USD"]
@@ -73,6 +134,12 @@ class AutomaticTasks:
                                         inline=False)
 
                     await block_channel.send(embed=new_block)
+
+                    if self.twitter_messages and self.tweet_service_status(setting_name="t_new_block"):
+                        self.tweet(text=f"I have forged New block @ height {int(last_block_found['block_height']):,} "
+                                        f" in value of {xcash_block_size:,} XCASH (${usd_final})"
+                                        f" {self.produce_hash_tag_list(hash_tag_count=5)}")
+
                     if self.bot.setting.update_settings_by_dict(setting_name="new_block",
                                                                 value={"value": int(
                                                                     last_block_found["block_height"])}):
@@ -94,9 +161,23 @@ class AutomaticTasks:
         if daily_settings["status"] == 1:
             delegate_stats = self.dpops_wrapper.delegate_api.get_stats()
             if not delegate_stats.get("error"):
-                if daily_settings["status"] == 1:
-                    await self.delegate_overall_message(delegate_settings=daily_settings, delegate_stats=delegate_stats,
-                                                        description='Daily Delegate Snapshot')
+
+                await self.delegate_overall_message(delegate_settings=daily_settings, delegate_stats=delegate_stats,
+                                                    description='Daily Delegate Snapshot')
+
+                # Twitter message for daily
+                if self.twitter_messages and self.tweet_service_status(setting_name="t_del_daily"):
+                    print("sending daily stats to twitter")
+                    conversion_xcash = int(int(delegate_stats['total_xcash_from_blocks_found']) / (10 ** 6))
+                    in_millions = int(conversion_xcash / (10 ** 6))
+
+                    self.tweet(text=f"Current stats of {self.bot.bot_settings['delegateName']}\n"
+                                    f"Rank: {delegate_stats['current_delegate_rank']}\n"
+                                    f"Blocks Found: {delegate_stats['total_blocks_found']}\n"
+                                    f"Produced: {in_millions} Mil XCASH\n"
+                                    f"Total Voters: {delegate_stats['total_voters']}\n"
+                                    f"{self.produce_hash_tag_list(hash_tag_count=3)}\n"
+                                    f"More info on: {self.bot.bot_settings['dpopsApi']}")
             else:
                 print(f'No API response fr delegate daily snapshot {delegate_stats["error"]}')
         else:
@@ -299,6 +380,9 @@ def start_tasks(automatic_tasks, snapshot_times):
     """
     scheduler = AsyncIOScheduler()
     print('Started Chron Monitors')
+    scheduler.add_job(automatic_tasks.vote_marketing_tweet,
+                      CronTrigger(hour=12, minute='01'), misfire_grace_time=2,
+                      max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
                       CronTrigger(minute=snapshot_times["delHourly"]["minute"],
                                   second=snapshot_times["delHourly"]["second"]), misfire_grace_time=2,

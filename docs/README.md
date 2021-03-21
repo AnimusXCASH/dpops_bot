@@ -16,19 +16,33 @@ Discord Bot monitor which can be deployed by anyone on their private server to a
     - [x] Voter queries with or without registered profile
         - [x] Last 4 payments sent by delegate for voter
         - [x] Current state of the voter in delegate
+        - [x] ROI calculations based on vote amount
     - [X] Apply for payment notifications
         - [x] Apply for payment notifications when voters public key is in the batch of payments
 
 - [x] Server owner
     - [x] block tracking
         - [x] Register for automatic notifications when delegate produces new block
-    - [x] DPOPS Stats notifications - multi time frames 
-        - [X] Daily overall statistical snapshots of delegate
+    - [x] Delegate statistical notifications - multi time frames
         - [x] Hourly overall statistical snapshots of delegate
+        - [X] Other timeframes: 3h, 4h, 6h, 12h
+        - [X] Daily overall statistical snapshots of delegate
     - [x] Automatic payment notifications
         - [x] Notify to Discord channel when batch of payments is sent out
+        - [X] Exact payment notifications to registered voters in system if in batch
+    - [X] Twitter relay
+        - [x] Daily delegate statistic snapshots 
+        - [x] Call to vote for delegate 
+        - [x] Batch Payment Notifications and conversions
+        - [x] New Block alert
+        - [x] Integrated X-Cash foundation promotion tweets
 
-- [ ] X-Cash DPOPS network queries
+- [X] X-Cash DPOPS network queries
+    - [X] Ranking top 10 DPOPS network
+        - [X] by blocks produced
+        - [X] by votes gathered
+        - [X] by verified blocks
+        - [X] All above categories for your delegate
 
 
 # How to's
