@@ -23,7 +23,7 @@ class AutomaticTasks:
             self.twitter_messages = None
 
     @staticmethod
-    def get_random_link(request_text:bool=None):
+    def get_random_link(request_text: bool = None):
 
         if request_text:
             xnetwork_link = ["Stay up to date by following us on @XCashCrypto",
@@ -44,7 +44,8 @@ class AutomaticTasks:
     @staticmethod
     def produce_hash_tag_list(hash_tag_count):
         hashtag_list = ["#dpops", "#weareXCASH", "$xcash", "#xcash", "#xcashians", "#xcashian", "#crypto",
-                        "#cryptocurrency", "#blockchain", "#trading", "#fintech", "#bitcoin", "#monero", "#xmr"]
+                        "#cryptocurrency", "#blockchain", "#trading", "#fintech", "#bitcoin", "#monero", "#xmr",
+                        "XCASH", "DPOPS", "#ethereum", "$ETH", "#wearexcash", "xcashians"]
 
         random_hash_string = random.sample(hashtag_list, hash_tag_count)
         hash_list = ' '.join(random_hash_string)
