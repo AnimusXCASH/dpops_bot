@@ -45,7 +45,7 @@ class AutomaticTasks:
     def produce_hash_tag_list(hash_tag_count):
         hashtag_list = ["#dpops", "#weareXCASH", "$xcash", "#xcash", "#xcashians", "#xcashian", "#crypto",
                         "#cryptocurrency", "#blockchain", "#trading", "#fintech", "#bitcoin", "#monero", "#xmr",
-                        "XCASH", "DPOPS", "#ethereum", "$ETH", "#wearexcash", "xcashians"]
+                        "#XCASH", "#DPOPS", "#ethereum", "$ETH", "#wearexcash", "xcashians"]
 
         random_hash_string = random.sample(hashtag_list, hash_tag_count)
         hash_list = ' '.join(random_hash_string)
@@ -314,6 +314,16 @@ class AutomaticTasks:
                     payments_emb.set_footer(text="Thank you for votes")
                     payments_emb.set_author(name=f'{self.bot.user}', url='http://xpayment.x-network.eu/')
                     await payment_channel.send(embed=payments_emb)
+
+                    if self.twitter_messages and self.tweet_service_status(setting_name="t_payment_batch"):
+                        print("sending payment sent.")
+                        init_text = ["I have just paid", "I have just sent "]
+                        tt = f"{random.choice(init_text)} my voters reward for their votes," \
+                             f" in total of {float(tx['amount']) / (10 ** 6):,} XCASH (${usd_final})" \
+                             f" {self.produce_hash_tag_list(6)}."
+
+                        self.tweet(text=tt)
+
                 if self.bot.setting.update_settings_by_dict(setting_name="payment_notifications",
                                                             value={"value": int(new_outgoing[-1]["height"])}):
                     print("db updated successfully")

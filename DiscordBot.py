@@ -16,7 +16,6 @@ class DiscordBot(commands.Bot):
             command_prefix=commands.when_mentioned_or(self.bot_settings['command']),
             intents=Intents.all())
         self.remove_command('help')
-
         self.backend_manager = backend_manager
         self.dpops_queries = dpops_wrapper
         self.voters_manager = self.backend_manager.voters
