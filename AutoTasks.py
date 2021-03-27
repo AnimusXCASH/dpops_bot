@@ -45,7 +45,7 @@ class AutomaticTasks:
     def produce_hash_tag_list(hash_tag_count):
         hashtag_list = ["#dpops", "#weareXCASH", "$xcash", "#xcash", "#xcashians", "#xcashian", "#crypto",
                         "#cryptocurrency", "#blockchain", "#trading", "#fintech", "#bitcoin", "#monero", "#xmr",
-                        "XCASH", "DPOPS", "#ethereum", "$ETH", "#wearexcash", "xcashians"]
+                        "#XCASH", "#DPOPS", "#ethereum", "$ETH", "#wearexcash", "xcashians"]
 
         random_hash_string = random.sample(hashtag_list, hash_tag_count)
         hash_list = ' '.join(random_hash_string)
