@@ -106,6 +106,19 @@ class TwitterSetupCommands(commands.Cog):
                                                               f" ***on/off*** while yours was {status}",
                                                 destination=ctx.channel)
 
+    @twitter.command()
+    async def payments(self, ctx, on_off):
+        status = on_off.lower()
+        if status and status in ["on", "off"]:
+            status_code = self.get_status_number(status=status)
+            await self.stats_notifications_manager(ctx=ctx, setting_name="t_payment_batch",
+                                                   status_code=status_code, funct='Batch Payments', selection=on_off)
+        else:
+            await customMessages.system_message(ctx=ctx, c=Colour.red(), title="Wrong Status",
+                                                error_details=f"You have provided wrong status. Available are"
+                                                              f" ***on/off*** while yours was {status}",
+                                                destination=ctx.channel)
+
 
 def setup(bot):
     bot.add_cog(TwitterSetupCommands(bot))

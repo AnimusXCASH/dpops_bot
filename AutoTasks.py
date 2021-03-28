@@ -69,12 +69,12 @@ class AutomaticTasks:
         """
         Send message to twitter with voting initiative
         """
-        print("Vote marketing")
         if self.twitter_messages and self.tweet_service_status(setting_name="t_call_to_vote"):
-            print("Sending tweet")
             self.tweet(
-                text=f'Vote for delegate with --> {self.bot.bot_settings["voteString"]} '
-                     f'{self.produce_hash_tag_list(hash_tag_count=6)}')
+                text=f'Vote for delegate with --> {self.bot.bot_settings["voteString"]}\n'
+                     f' Stats Tracking -->  {self.bot.bot_settings["dpopsApi"]} or join us over'
+                     f' on Discord{self.bot.bot_settings["discordInvite"]}'
+                     f'{self.produce_hash_tag_list(hash_tag_count=4)}')
 
     async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict, description: str):
         daily_stats = self.bot.get_channel(id=int(delegate_settings["channel"]))
@@ -392,7 +392,7 @@ def start_tasks(automatic_tasks, snapshot_times):
     scheduler = AsyncIOScheduler()
     print('Started Chron Monitors')
     scheduler.add_job(automatic_tasks.vote_marketing_tweet,
-                      CronTrigger(hour=12, minute='01'), misfire_grace_time=2,
+                      CronTrigger(hour='3,6,9,12,15,18,21', minute='01'), misfire_grace_time=2,
                       max_instances=20)
     scheduler.add_job(automatic_tasks.delegate_hourly_snapshots,
                       CronTrigger(minute=snapshot_times["delHourly"]["minute"],
