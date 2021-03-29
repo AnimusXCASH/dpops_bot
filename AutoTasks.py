@@ -73,8 +73,8 @@ class AutomaticTasks:
             self.tweet(
                 text=f'Vote for delegate with --> {self.bot.bot_settings["voteString"]}\n'
                      f' Stats Tracking -->  {self.bot.bot_settings["dpopsApi"]} or join us over'
-                     f' on Discord{self.bot.bot_settings["discordInvite"]}'
-                     f'{self.produce_hash_tag_list(hash_tag_count=4)}')
+                     f' on Discord {self.bot.bot_settings["discordInvite"]}'
+                     f' {self.produce_hash_tag_list(hash_tag_count=4)}')
 
     async def delegate_overall_message(self, delegate_settings: dict, delegate_stats: dict, description: str):
         daily_stats = self.bot.get_channel(id=int(delegate_settings["channel"]))
