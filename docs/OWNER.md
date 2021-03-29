@@ -63,7 +63,6 @@ You are required to tag the channel when setting up the tracker
 @botTag stats daily #discord.TextChannel off
 ```
 
-
 ## Payment Notifications
 
 ### Initial requirements
@@ -134,3 +133,27 @@ Same command is used as well to change the channel
 # Deactivate notifications
 @botTag payments off
 ```
+
+## Twitter Relay Activation commands
+```text
+@botTag twitter 
+```
+
+### Daily stats tweets
+```text
+@botTag twitter daily <on/off>
+```
+### Delegate vote initiative
+```text
+@botTag twitter vote <on/off>
+```
+### Delegate new block tweet
+```text
+@botTag twitter block <on/off>
+```
+### Delegate batch payments tweet
+```text
+@botTag twitter payments <on/off>
+```
+
+
