@@ -9,6 +9,7 @@ class DpopsDelegates:
         self.get_delegate_info = 'getdelegatesinformation'
         self.get_delegates_voters = 'getdelegatesvoterslist'
         self.get_round_statistics = 'getroundstatistics'
+        self.delegates_stats = "delegateswebsitegetstatistics"
 
     def __process_request(self, api_link: str):
         api_link = self.api + api_link
@@ -17,6 +18,10 @@ class DpopsDelegates:
             return response.json()
         else:
             return {"error": f"Could not get response from server"}
+
+    def get_global_dpops_stats(self):
+        global_stats = self.api + self.delegates_stats
+        return self.__process_request(api_link=global_stats)
 
     def get_delegates(self):
         return self.__process_request(api_link=self.delegates)
