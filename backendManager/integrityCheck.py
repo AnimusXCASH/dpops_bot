@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 class IntegrityCheck(object):
     def __init__(self, connection):
         self.connection = connection
@@ -5,7 +8,8 @@ class IntegrityCheck(object):
         self.required_collections = ["votersDb", "botSettings"]
         self.required_documents = ["new_block", "delegate_daily", "delegate_hourly",
                                    "delegate_4h", "delegate_3h", "delegate_6h", "delegate_12h", 'payment_notifications',
-                                   "t_del_daily", "t_new_block", "t_return_rate","t_call_to_vote","t_payment_batch"]
+                                   "t_del_daily", "t_new_block", "t_return_rate", "t_call_to_vote", "t_payment_batch",
+                                   "payments_last_timestamp"]
 
     def check_collections(self):
         """
@@ -33,5 +37,10 @@ class IntegrityCheck(object):
                 status = self.dpops_delegate.botSettings.insert_one(data)
                 if status.inserted_id:
                     print(f"New document created successfully: {r}")
+
+                    if r == "paymentsLastBlock":
+                        curent_unix = int(datetime.utcnow().timestamp())
+                        self.dpops_delegate.botSettings.update_one({"setting": r},
+                                                                   {"$set": {"value": int(curent_unix)}})
                 else:
                     print(f"ERROR: Document {r} could not be inserted into collection of botSettings")
