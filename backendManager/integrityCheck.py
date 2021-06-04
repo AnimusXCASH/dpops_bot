@@ -38,7 +38,7 @@ class IntegrityCheck(object):
                 if status.inserted_id:
                     print(f"New document created successfully: {r}")
 
-                    if r == "paymentsLastBlock":
+                    if r == "payments_last_timestamp":
                         curent_unix = int(datetime.utcnow().timestamp())
                         self.dpops_delegate.botSettings.update_one({"setting": r},
                                                                    {"$set": {"value": int(curent_unix)}})
