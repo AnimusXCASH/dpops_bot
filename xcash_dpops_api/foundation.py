@@ -20,8 +20,7 @@ class DpopsDelegates:
             return {"error": f"Could not get response from server"}
 
     def get_global_dpops_stats(self):
-        global_stats = self.api + self.delegates_stats
-        return self.__process_request(api_link=global_stats)
+        return self.__process_request(api_link=self.delegates_stats)
 
     def get_delegates(self):
         return self.__process_request(api_link=self.delegates)
