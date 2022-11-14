@@ -16,3 +16,4 @@ typing-extensions==3.7.4.3
 tzlocal==2.1
 urllib3==1.26.3
 yarl==1.6.3
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
